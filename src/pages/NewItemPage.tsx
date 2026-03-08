@@ -258,7 +258,7 @@ const NewItemPage = () => {
             <label className="mb-1 block text-sm font-medium">
               Price <span className="text-destructive">*</span>
             </label>
-            <p className="mb-3 text-xs text-ring">
+            <p className="mb-3 text-xs text-info">
               ● 自提与DiDi Your Business渠道的定价需低于外卖价格(PM提供文案)
             </p>
 
