@@ -471,18 +471,21 @@ const NewItemPage = () => {
             </RadioGroup>
           </div>
 
-          {/* Action buttons */}
-          <div className="flex gap-3 border-t border-border pt-6 pb-10">
-            <Button variant="outline" onClick={() => navigate("/")}>
-              Discard
-            </Button>
-            <Button
-              onClick={handleSubmit}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              {isEdit ? "Save" : "Submit"}
-            </Button>
-          </div>
+        </div>
+      </div>
+
+      {/* Sticky bottom action buttons */}
+      <div className="sticky bottom-0 border-t border-border bg-background px-6 py-4">
+        <div className="mx-auto flex max-w-2xl gap-3">
+          <Button
+            onClick={handleSubmit}
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
+          >
+            {isEdit ? "Save" : "Submit"}
+          </Button>
+          <Button variant="outline" onClick={() => navigate("/")}>
+            Discard
+          </Button>
         </div>
       </div>
     </AdminLayout>
