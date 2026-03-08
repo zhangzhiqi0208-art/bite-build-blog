@@ -376,8 +376,8 @@ const MenuListPage = () => {
                       : "text-foreground hover:bg-secondary"
                   }`}
                 >
-                  <TruncatedText text={cat.name} className="flex-1" />
-                  <span className={`text-xs min-w-[1.5rem] text-right transition-transform group-hover:-translate-x-6 ${selectedCategory === idx ? "text-card/70" : "text-muted-foreground"}`}>
+                  <TruncatedText text={cat.name} className="flex-1 min-w-0 mr-2" />
+                  <span className={`text-xs shrink-0 text-right transition-all group-hover:mr-7 ${selectedCategory === idx ? "text-card/70" : "text-muted-foreground"}`}>
                     {cat.count}
                   </span>
                   <DropdownMenu>
