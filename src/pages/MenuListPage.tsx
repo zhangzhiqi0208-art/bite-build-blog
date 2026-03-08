@@ -224,6 +224,17 @@ const MenuListPage = () => {
     setNewCategoryName("");
   };
 
+  const handleSortSave = (reordered: { name: string; count: number }[]) => {
+    const oldIndexMap = reordered.map(r => categories.findIndex(c => c.name === r.name));
+    const newCategoryItemsMap: Record<number, MenuItem[]> = {};
+    oldIndexMap.forEach((oldIdx, newIdx) => {
+      newCategoryItemsMap[newIdx] = categoryItems[oldIdx] || [];
+    });
+    setCategories(reordered);
+    setCategoryItems(newCategoryItemsMap);
+    setSelectedCategory(0);
+  };
+
   useEffect(() => {
     if (addDialogOpen && addInputRef.current) {
       addInputRef.current.focus();
