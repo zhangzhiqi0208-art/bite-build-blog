@@ -65,9 +65,9 @@ const initialCategories = [
 
 const itemsByCategory: Record<number, MenuItem[]> = {
   0: [ // Os Burgers Mais Pedidos da 99 - 5 items
-    { id: "0-1", title: "Smash Burger Duplo 200g", image: "🍔", tags: ["In marketing activities"], deliveryPrice: "R$32.90", pickupPrice: "R$28.90", stock: "Unlimited", status: true, addOns: [] },
-    { id: "0-2", title: "Smash Burger Triplo 300g", image: "🍔", tags: [], deliveryPrice: "R$42.90", pickupPrice: "R$38.90", stock: "500", status: true, addOns: [] },
-    { id: "0-3", title: "Smash Burger Bacon & Cheddar", image: "🍔", tags: ["Under review"], deliveryPrice: "R$36.90", pickupPrice: "R$32.90", stock: "300", status: true, addOns: [] },
+    { id: "0-1", title: "Smash Burger Duplo 200g", image: "🍔", tags: [], marketingActivity: true, reviewStatus: "under_review", deliveryPrice: "R$32.90", pickupPrice: "R$28.90", stock: "Unlimited", status: true, addOns: [] },
+    { id: "0-2", title: "Smash Burger Triplo 300g", image: "🍔", tags: [], availability: "Available from December 25th, 11:00 AM", notSoldIndependently: true, deliveryPrice: "R$42.90", pickupPrice: "R$38.90", stock: "500", status: true, addOns: [] },
+    { id: "0-3", title: "Smash Burger Bacon & Cheddar", image: "🍔", tags: [], deliveryPrice: "R$36.90", pickupPrice: "R$32.90", stock: "300", status: true, addOns: [] },
     { id: "0-4", title: "Smash Burger Egg", image: "🍔", tags: [], deliveryPrice: "R$34.90", pickupPrice: "R$30.90", stock: "200", status: false, addOns: [] },
     { id: "0-5", title: "Smash Burger Catupiry", image: "🍔", tags: [], deliveryPrice: "R$35.90", pickupPrice: "R$31.90", stock: "Unlimited", status: true, addOns: [] },
   ],
