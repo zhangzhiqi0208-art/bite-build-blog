@@ -124,7 +124,7 @@ const NewItemPage = () => {
     const target = refMap[section].current;
     const container = scrollContainerRef.current?.closest("main");
     if (target && container) {
-      const headerHeight = 90; // sticky header height approx
+      const headerHeight = 110; // sticky header height + padding
       const targetTop = target.offsetTop;
       container.scrollTo({
         top: targetTop - headerHeight,
