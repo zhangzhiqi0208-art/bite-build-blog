@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback } from "react";
-import { ArrowUpToLine, GripVertical } from "lucide-react";
+import { useState, useRef } from "react";
+import { ArrowUpToLine, GripVertical, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -75,9 +75,15 @@ export const CategorySortDialog = ({
         className="sm:max-w-lg flex flex-col p-0"
         style={{ maxHeight: "calc(100vh - 120px)" }}
       >
-        <DialogHeader className="sticky top-0 z-10 bg-background px-6 pt-6 pb-4 border-b border-border">
+        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-border">
           <DialogTitle>Category sorting</DialogTitle>
-        </DialogHeader>
+          <button
+            onClick={() => onOpenChange(false)}
+            className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
 
         <div className="flex-1 overflow-y-auto px-6">
           {items.map((cat, idx) => (
@@ -98,7 +104,12 @@ export const CategorySortDialog = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handlePinToTop(idx)}
-                  className="rounded p-1 hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                  disabled={idx === 0}
+                  className={`rounded p-1 transition-colors ${
+                    idx === 0
+                      ? "text-muted-foreground/30 cursor-not-allowed"
+                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  }`}
                   title="Pin to top"
                 >
                   <ArrowUpToLine className="h-4 w-4" />
@@ -113,7 +124,7 @@ export const CategorySortDialog = ({
           ))}
         </div>
 
-        <DialogFooter className="sticky bottom-0 z-10 bg-background px-6 py-4 border-t border-border gap-2 sm:gap-0">
+        <div className="flex justify-end gap-2 px-6 py-4 border-t border-border">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
@@ -123,7 +134,7 @@ export const CategorySortDialog = ({
           >
             Save
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
