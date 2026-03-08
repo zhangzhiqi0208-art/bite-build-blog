@@ -27,6 +27,10 @@ export const CategorySortDialog = ({
   const dragOverItem = useRef<number | null>(null);
   const [draggingIdx, setDraggingIdx] = useState<number | null>(null);
 
+  useEffect(() => {
+    if (open) setItems([...categories]);
+  }, [open, categories]);
+
   // Reset items when dialog opens
   const handleOpenChange = (val: boolean) => {
     if (val) setItems([...categories]);
