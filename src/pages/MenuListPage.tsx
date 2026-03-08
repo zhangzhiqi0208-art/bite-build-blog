@@ -442,6 +442,44 @@ const MenuListPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Category Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit category</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              ref={inputRef}
+              value={editCategoryName}
+              onChange={(e) => setEditCategoryName(e.target.value)}
+              placeholder="Category name"
+              className="h-12"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && editCategoryName.trim()) {
+                  handleSaveCategory();
+                }
+              }}
+            />
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setEditDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveCategory}
+              disabled={!editCategoryName.trim()}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              OK
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };
