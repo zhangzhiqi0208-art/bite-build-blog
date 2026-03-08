@@ -236,6 +236,7 @@ const MenuListPage = () => {
   return (
     <AdminLayout>
       <div className="p-6">
+
         {/* Tabs */}
         <div className="mb-4 flex gap-6 border-b border-border">
           <button className="border-b-2 border-foreground pb-2 text-sm font-semibold">Store Menu</button>
@@ -344,7 +345,6 @@ const MenuListPage = () => {
                     <TooltipContent side="top"><p>Add category</p></TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-              </div>
               </div>
             </div>
             <div className="space-y-0.5">
@@ -621,6 +621,7 @@ const MenuListPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </div>
     </AdminLayout>
   );
 };
