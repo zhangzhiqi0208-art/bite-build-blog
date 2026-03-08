@@ -542,8 +542,7 @@ const NewItemPage = () => {
           </div>{/* end sales info section */}
 
         </div>{/* end max-w-2xl */}
-        </div>{/* end p-6 */}
-      </div>{/* end scrollable content */}
+      </div>{/* end form content */}
 
       {/* Sticky bottom action buttons */}
       <div className="sticky bottom-0 border-t border-border bg-background px-6 py-4">
