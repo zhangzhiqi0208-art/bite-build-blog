@@ -39,6 +39,7 @@ const NewItemPage = () => {
   const [containsAlcohol, setContainsAlcohol] = useState("no");
   const [saleTimeType, setSaleTimeType] = useState("weekly");
   const [selectedAllergens, setSelectedAllergens] = useState<number[]>([]);
+  const [submitted, setSubmitted] = useState(false);
 
   // Load existing data for edit mode
   useEffect(() => {
@@ -66,16 +67,8 @@ const NewItemPage = () => {
   };
 
   const handleSubmit = () => {
-    if (!itemName.trim()) {
-      toast({ title: "Item Name is required", variant: "destructive" });
-      return;
-    }
-    if (!selectedCategoryIdx) {
-      toast({ title: "Category is required", variant: "destructive" });
-      return;
-    }
-    if (!deliveryPrice.trim()) {
-      toast({ title: "Delivery price is required", variant: "destructive" });
+    setSubmitted(true);
+    if (!itemName.trim() || !selectedCategoryIdx || !deliveryPrice.trim()) {
       return;
     }
 
@@ -192,9 +185,13 @@ const NewItemPage = () => {
                 maxLength={50}
                 value={itemName}
                 onChange={(e) => setItemName(e.target.value)}
+                className={submitted && !itemName.trim() ? "border-destructive focus-visible:ring-destructive" : ""}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{itemName.length}/50</span>
             </div>
+            {submitted && !itemName.trim() && (
+              <p className="mt-1 text-xs text-destructive">Item name is required</p>
+            )}
           </div>
 
           {/* PDV Code */}
@@ -250,7 +247,7 @@ const NewItemPage = () => {
               Store-defined Category <span className="text-destructive">*</span> ℹ
             </label>
             <Select value={selectedCategoryIdx} onValueChange={setSelectedCategoryIdx}>
-              <SelectTrigger>
+              <SelectTrigger className={submitted && !selectedCategoryIdx ? "border-destructive focus:ring-destructive" : ""}>
                 <SelectValue placeholder="Please select" />
               </SelectTrigger>
               <SelectContent>
@@ -259,6 +256,9 @@ const NewItemPage = () => {
                 ))}
               </SelectContent>
             </Select>
+            {submitted && !selectedCategoryIdx && (
+              <p className="mt-1 text-xs text-destructive">Category is required</p>
+            )}
           </div>
 
           {/* Item Classification */}
@@ -376,9 +376,13 @@ const NewItemPage = () => {
                   placeholder="Please enter"
                   value={deliveryPrice}
                   onChange={(e) => setDeliveryPrice(e.target.value)}
+                  className={submitted && !deliveryPrice.trim() ? "border-destructive focus-visible:ring-destructive" : ""}
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">R$</span>
               </div>
+              {submitted && !deliveryPrice.trim() && (
+                <p className="mt-1 text-xs text-destructive">Delivery price is required</p>
+              )}
             </div>
 
             {/* Pick-up & Didi */}
