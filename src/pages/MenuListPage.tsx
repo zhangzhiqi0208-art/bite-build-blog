@@ -437,108 +437,120 @@ const MenuListPage = () => {
               </button>
             </div>
 
-            {/* Table header */}
-            <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] gap-2 border-b border-border px-2 pb-2 text-xs text-muted-foreground">
-              <span>Title</span>
-              <span className="text-right">Delivery</span>
-              <span className="text-right">Pick-up</span>
-              <span className="text-right">Stock</span>
-              <span className="text-center">Status</span>
-              <span></span>
-            </div>
+            {(categoryItems[selectedCategory] || []).length === 0 ? (
+              <div className="flex flex-1 flex-col items-center justify-center py-20">
+                <img src={emptyMenuImage} alt="Empty menu" className="mb-6 h-32 w-32 object-contain" />
+                <p className="mb-4 text-base font-semibold text-foreground">Start building your menu</p>
+                <Button
+                  onClick={() => navigate("/menu/new")}
+                  className="bg-[hsl(50,100%,50%)] text-foreground hover:bg-[hsl(50,100%,45%)] font-medium"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add item
+                </Button>
+              </div>
+            ) : (
+              <>
+                {/* Table header */}
+                <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] gap-2 border-b border-border px-2 pb-2 text-xs text-muted-foreground">
+                  <span>Title</span>
+                  <span className="text-right">Delivery</span>
+                  <span className="text-right">Pick-up</span>
+                  <span className="text-right">Stock</span>
+                  <span className="text-center">Status</span>
+                  <span></span>
+                </div>
 
-            {/* Items */}
-            <div className="divide-y divide-border">
-              {(categoryItems[selectedCategory] || []).map((item) => (
-                <div key={item.id}>
-                  {/* Main item row */}
-                  <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-2xl">
-                        {item.image}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium">{item.title}</p>
-                        <div className="mt-0.5 flex flex-wrap gap-1">
-                          {item.tags.map((tag, i) => (
-                            <span
-                              key={i}
-                              className="rounded-full bg-secondary px-2 py-0.5 text-[10px] text-muted-foreground"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                        {item.availability && (
-                          <p className="mt-0.5 text-[10px] text-muted-foreground">
-                            📅 {item.availability}
-                          </p>
-                        )}
-                        {item.addOns && item.addOns.length > 0 && (
-                          <button
-                            onClick={() => toggleExpand(item.id)}
-                            className="mt-1 text-xs text-muted-foreground hover:text-foreground"
-                          >
-                            Add-on {expandedItems.includes(item.id) ? "▲" : "▼"}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                    <span className="text-right text-sm">{item.deliveryPrice} ⏱</span>
-                    <span className="text-right text-sm">{item.pickupPrice}</span>
-                    <span className={`text-right text-sm ${item.stock === "0" ? "text-destructive" : ""}`}>
-                      {item.stock}
-                      {item.stock === "0" && " ⚠"}
-                    </span>
-                    <div className="flex justify-center">
-                      <Switch checked={item.status} />
-                    </div>
-                    <button className="rounded p-1 hover:bg-secondary">
-                      <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                    </button>
-                  </div>
-
-                  {/* Expanded Add-ons */}
-                  {expandedItems.includes(item.id) &&
-                    item.addOns?.map((group, gIdx) => (
-                      <div key={gIdx} className="bg-secondary/50 px-6 py-2">
-                        <p className="mb-1 text-xs font-semibold">
-                          {group.name}{" "}
-                          <span className={`font-normal ${group.required ? "text-foreground" : "text-muted-foreground"}`}>
-                            {group.required ? "Required" : "Optional"}
-                          </span>
-                        </p>
-                        {group.items.map((sub, sIdx) => (
-                          <div key={sIdx}>
-                            <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 py-1.5">
-                              <span className="pl-4 text-sm">{sub.name}</span>
-                              <span className="text-right text-sm">{sub.deliveryPrice} ⏱</span>
-                              <span className="text-right text-sm">{sub.pickupPrice}</span>
-                              <span className={`text-right text-sm ${sub.stock === "0" ? "text-destructive" : ""}`}>
-                                {sub.stock}
-                                {sub.stock === "0" && " ⚠"}
-                              </span>
-                              <div className="flex justify-center">
-                                <Switch checked={sub.status} />
-                              </div>
-                              <button className="rounded p-1 hover:bg-secondary">
-                                <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                              </button>
+                {/* Items */}
+                <div className="divide-y divide-border">
+                  {(categoryItems[selectedCategory] || []).map((item) => (
+                    <div key={item.id}>
+                      {/* Main item row */}
+                      <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-2xl">
+                            {item.image}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">{item.title}</p>
+                            <div className="mt-0.5 flex flex-wrap gap-1">
+                              {item.tags.map((tag, i) => (
+                                <span
+                                  key={i}
+                                  className="rounded-full bg-secondary px-2 py-0.5 text-[10px] text-muted-foreground"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
                             </div>
-                            {sub.warning && sub.warning.includes("prohibited") && (
-                              <p className="mb-1 pl-4 text-xs text-destructive">
-                                ⛔ {sub.warning}{" "}
-                                <span className="cursor-pointer text-primary-foreground underline">Go and view details ›</span>
+                            {item.availability && (
+                              <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                                <Clock className="h-3 w-3" />
+                                {item.availability}
                               </p>
                             )}
                           </div>
-                        ))}
+                        </div>
+                        <span className="text-right text-sm">{item.deliveryPrice}</span>
+                        <span className="text-right text-sm">{item.pickupPrice}</span>
+                        <span className="text-right text-sm">{item.stock}</span>
+                        <div className="flex justify-center">
+                          <Switch checked={item.status} />
+                        </div>
+                        <button className="rounded p-1 hover:bg-secondary">
+                          <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                        </button>
                       </div>
-                    ))}
+
+                      {/* Add-on groups */}
+                      {item.addOns && item.addOns.length > 0 &&
+                        item.addOns.map((group, gi) => (
+                          <div key={gi} className="border-t border-border bg-secondary/30">
+                            <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-2">
+                              <span className="pl-4 text-xs font-medium text-muted-foreground">
+                                {group.name}{" "}
+                                {group.required && (
+                                  <span className="text-destructive">(Required)</span>
+                                )}
+                              </span>
+                            </div>
+                            {group.items.map((sub, si) => (
+                              <div key={si}>
+                                <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-2">
+                                  <span className="pl-8 text-sm">{sub.name}</span>
+                                  <span className="text-right text-sm">
+                                    {sub.deliveryPrice}
+                                  </span>
+                                  <span className="text-right text-sm">
+                                    {sub.pickupPrice}
+                                  </span>
+                                  <span className="text-right text-sm">
+                                    {sub.stock}
+                                  </span>
+                                  <div className="flex justify-center">
+                                    <Switch checked={sub.status} />
+                                  </div>
+                                  <button className="rounded p-1 hover:bg-secondary">
+                                    <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                                  </button>
+                                </div>
+                                {sub.warning && sub.warning.includes("prohibited") && (
+                                  <p className="mb-1 pl-4 text-xs text-destructive">
+                                    ⛔ {sub.warning}{" "}
+                                    <span className="cursor-pointer text-primary-foreground underline">Go and view details ›</span>
+                                  </p>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            )}
           </div>
+        </div>
         </div>
 
       {/* Edit Category Dialog */}
