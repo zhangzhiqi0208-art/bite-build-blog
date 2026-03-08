@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "@/components/AdminLayout";
-import { Search, Plus, Settings2, MoreHorizontal, Clock, List, Pencil, Trash2, Clock4 } from "lucide-react";
+import { Search, Plus, Settings2, MoreHorizontal, Clock, List, Pencil, Trash2, Clock4, AlertCircle } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -139,14 +139,19 @@ const itemsByCategory: Record<number, MenuItem[]> = {
 const MenuListPage = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState(initialCategories);
-  const [selectedCategory, setSelectedCategory] = useState(1);
-  const [expandedItems, setExpandedItems] = useState<string[]>(["2"]);
+  const [categoryItems, setCategoryItems] = useState(itemsByCategory);
+  const [selectedCategory, setSelectedCategory] = useState(0);
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
   
   // Edit category dialog state
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingCategoryIndex, setEditingCategoryIndex] = useState<number | null>(null);
   const [editCategoryName, setEditCategoryName] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Delete category dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingCategoryIndex, setDeletingCategoryIndex] = useState<number | null>(null);
 
   const toggleExpand = (id: string) => {
     setExpandedItems((prev) =>
@@ -171,6 +176,32 @@ const MenuListPage = () => {
     setEditDialogOpen(false);
     setEditingCategoryIndex(null);
     setEditCategoryName("");
+  };
+
+  const handleDeleteCategory = (idx: number) => {
+    setDeletingCategoryIndex(idx);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deletingCategoryIndex === null) return;
+    setCategories(prev => prev.filter((_, idx) => idx !== deletingCategoryIndex));
+    setCategoryItems(prev => {
+      const newItems = { ...prev };
+      delete newItems[deletingCategoryIndex];
+      // Re-index remaining items
+      const reindexed: Record<number, MenuItem[]> = {};
+      const remaining = Object.entries(newItems)
+        .sort(([a], [b]) => Number(a) - Number(b))
+        .map(([, items]) => items);
+      remaining.forEach((items, i) => { reindexed[i] = items; });
+      return reindexed;
+    });
+    if (selectedCategory >= deletingCategoryIndex && selectedCategory > 0) {
+      setSelectedCategory(prev => prev - 1);
+    }
+    setDeleteDialogOpen(false);
+    setDeletingCategoryIndex(null);
   };
 
   useEffect(() => {
@@ -317,7 +348,13 @@ const MenuListPage = () => {
                         <Clock4 className="h-4 w-4" />
                         Set pinned time
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive cursor-pointer">
+                      <DropdownMenuItem
+                        className="gap-2 text-destructive focus:text-destructive cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteCategory(idx);
+                        }}
+                      >
                         <Trash2 className="h-4 w-4" />
                         Delete
                       </DropdownMenuItem>
@@ -354,7 +391,7 @@ const MenuListPage = () => {
 
             {/* Items */}
             <div className="divide-y divide-border">
-              {(itemsByCategory[selectedCategory] || []).map((item) => (
+              {(categoryItems[selectedCategory] || []).map((item) => (
                 <div key={item.id}>
                   {/* Main item row */}
                   <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-3">
@@ -477,6 +514,32 @@ const MenuListPage = () => {
             <Button
               onClick={handleSaveCategory}
               disabled={!editCategoryName.trim()}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              OK
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Category Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-orange-500" />
+              Are you sure you want to delete?
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Deleting a category will also delete all dishes under that category, and these dishes cannot be recovered. Please be careful.
+          </p>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmDelete}
               className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
               OK
