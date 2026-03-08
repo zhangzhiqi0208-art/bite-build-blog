@@ -178,6 +178,32 @@ const MenuListPage = () => {
     setEditCategoryName("");
   };
 
+  const handleDeleteCategory = (idx: number) => {
+    setDeletingCategoryIndex(idx);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deletingCategoryIndex === null) return;
+    setCategories(prev => prev.filter((_, idx) => idx !== deletingCategoryIndex));
+    setCategoryItems(prev => {
+      const newItems = { ...prev };
+      delete newItems[deletingCategoryIndex];
+      // Re-index remaining items
+      const reindexed: Record<number, MenuItem[]> = {};
+      const remaining = Object.entries(newItems)
+        .sort(([a], [b]) => Number(a) - Number(b))
+        .map(([, items]) => items);
+      remaining.forEach((items, i) => { reindexed[i] = items; });
+      return reindexed;
+    });
+    if (selectedCategory >= deletingCategoryIndex && selectedCategory > 0) {
+      setSelectedCategory(prev => prev - 1);
+    }
+    setDeleteDialogOpen(false);
+    setDeletingCategoryIndex(null);
+  };
+
   useEffect(() => {
     if (editDialogOpen && inputRef.current) {
       inputRef.current.focus();
