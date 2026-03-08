@@ -299,7 +299,13 @@ const MenuListPage = () => {
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" side="right" className="w-40">
-                      <DropdownMenuItem className="gap-2 cursor-pointer">
+                      <DropdownMenuItem 
+                        className="gap-2 cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditCategory(idx);
+                        }}
+                      >
                         <Pencil className="h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
