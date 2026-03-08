@@ -464,15 +464,15 @@ const MenuListPage = () => {
                 {/* Items */}
                 <div className="divide-y divide-border">
                   {(categoryItems[selectedCategory] || []).map((item) => (
-                    <div key={item.id} className={!item.status ? "opacity-40" : ""}>
+                    <div key={item.id}>
                       {/* Main item row */}
                       <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-3">
                         <div className="flex items-center gap-3">
-                          <div className={`flex h-12 w-12 items-center justify-center rounded-lg text-2xl ${!item.status ? "bg-secondary grayscale" : "bg-secondary"}`}>
+                          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-2xl">
                             {item.image}
                           </div>
                           <div>
-                            <p className="text-sm font-medium">{item.title}</p>
+                            <p className={`text-sm font-medium ${!item.status ? "text-muted-foreground/50" : ""}`}>{item.title}</p>
                             {(item.reviewStatus || item.marketingActivity || item.availability || item.notSoldIndependently) && (
                               <div className="mt-1 flex flex-wrap gap-1.5">
                                 {item.reviewStatus === "under_review" && (
@@ -503,9 +503,9 @@ const MenuListPage = () => {
                             )}
                           </div>
                         </div>
-                        <span className="text-right text-sm">{item.deliveryPrice}</span>
-                        <span className="text-right text-sm">{item.pickupPrice}</span>
-                        <span className="text-right text-sm">{item.stock}</span>
+                        <span className={`text-right text-sm ${!item.status ? "text-muted-foreground/50" : ""}`}>{item.deliveryPrice}</span>
+                        <span className={`text-right text-sm ${!item.status ? "text-muted-foreground/50" : ""}`}>{item.pickupPrice}</span>
+                        <span className={`text-right text-sm ${!item.status ? "text-muted-foreground/50" : ""}`}>{item.stock}</span>
                         <div className="flex justify-center" style={{ opacity: !item.status ? 2.5 : 1 }}>
                           <Switch
                             checked={item.status}
