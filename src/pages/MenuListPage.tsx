@@ -19,6 +19,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { TruncatedText } from "@/components/TruncatedText";
 interface MenuItem {
   id: string;
   title: string;
@@ -48,9 +49,9 @@ interface AddOnGroup {
 const initialCategories = [
   { name: "Os Burgers Mais Pedidos da 99", count: 5 },
   { name: "Combos Irresistíveis", count: 4 },
-  { name: "Edição Limitada - Prove Antes Q...", count: 1 },
+  { name: "Edição Limitada - Prove Antes Que Acabe", count: 1 },
   { name: "Escolhas Impossíveis de Errar", count: 6 },
-  { name: "Originais N! Burger - So A Gente...", count: 2 },
+  { name: "Originais N! Burger - So A Gente Tem", count: 2 },
   { name: "Clássicos - Não Tem Como Errar!", count: 4 },
   { name: "Acompanhamentos", count: 4 },
   { name: "Vai Um Docinho Aí", count: 1 },
@@ -283,7 +284,7 @@ const MenuListPage = () => {
                       : "text-foreground hover:bg-secondary"
                   }`}
                 >
-                  <span className="truncate flex-1">{cat.name}</span>
+                  <TruncatedText text={cat.name} className="flex-1" />
                   <span className={`text-xs min-w-[1.5rem] text-right ${selectedCategory === idx ? "text-card/70" : "text-muted-foreground"}`}>
                     {cat.count}
                   </span>
