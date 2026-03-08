@@ -408,6 +408,10 @@ const NewItemPage = () => {
             </Button>
           </div>
 
+          </div>{/* end modifications section */}
+
+          {/* === SALES INFO SECTION === */}
+          <div ref={salesInfoRef}>
           {/* Price */}
           <div>
             <label className="mb-1 block text-sm font-medium">
