@@ -45,7 +45,7 @@ interface AddOnGroup {
   }[];
 }
 
-const categories = [
+const initialCategories = [
   { name: "Os Burgers Mais Pedidos da 99", count: 5 },
   { name: "Combos Irresistíveis", count: 4 },
   { name: "Edição Limitada - Prove Antes Q...", count: 1 },
