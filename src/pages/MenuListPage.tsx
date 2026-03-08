@@ -57,81 +57,84 @@ const initialCategories = [
   { name: "Vai Um Docinho Aí", count: 1 },
 ];
 
-const sampleItems: MenuItem[] = [
-  {
-    id: "1",
-    title: "Combo Smash Burger + Batata + CocaCola",
-    image: "🍔",
-    tags: ["Under review", "In marketing activities"],
-    availability: "Available from December 25th, 11:00 AM",
-    deliveryPrice: "R$9999.99",
-    pickupPrice: "R$9999.99",
-    stock: "Unlimited",
-    status: true,
-    addOns: [],
-  },
-  {
-    id: "2",
-    title: "Combo N! Crispy Chicken + Batata + CocaCola",
-    image: "🍗",
-    tags: ["In marketing activities", "Cannot be sold independently"],
-    deliveryPrice: "R$100.00",
-    pickupPrice: "R$80.00",
-    stock: "900",
-    status: true,
-    addOns: [
-      {
-        name: "Snack (1of3)",
-        required: true,
-        items: [
-          { name: "Chicken Pop - Sobrecoxas Empandas C", deliveryPrice: "R$40.00", pickupPrice: "R$36.00", stock: "Unlimited", status: true },
-          { name: "Chicken Pop - Molho Barbec", deliveryPrice: "R$20.00", pickupPrice: "R$18.00", stock: "0", status: true, warning: "Low stock" },
-          { name: "Chicken Pop - Crocantes", deliveryPrice: "R$20.00", pickupPrice: "R$18.00", stock: "999", status: true },
-        ],
-      },
-      {
-        name: "Salad (1of3)",
-        required: false,
-        items: [
-          { name: "Vegatable Salada", deliveryPrice: "R$40.00", pickupPrice: "R$36.00", stock: "999", status: false, warning: "This dish contained prohibited words and has been removed from the platform." },
-          { name: "Chesse Salada", deliveryPrice: "R$20.00", pickupPrice: "R$18.00", stock: "999", status: true },
-          { name: "Classic Salad", deliveryPrice: "R$20.00", pickupPrice: "R$18.00", stock: "999", status: true },
-        ],
-      },
-      {
-        name: "Beverage (1of2)",
-        required: false,
-        items: [
-          { name: "CocaCola", deliveryPrice: "R$6.00", pickupPrice: "R$4.00", stock: "999", status: true },
-          { name: "Sprite", deliveryPrice: "R$6.00", pickupPrice: "R$4.00", stock: "999", status: true },
-        ],
-      },
-    ],
-  },
-  {
-    id: "3",
-    title: "Combo Cheese Burger 120g + Batatas Rusticas + CocaCola",
-    image: "🍔",
-    tags: [],
-    deliveryPrice: "R$100.00",
-    pickupPrice: "R$80.00",
-    stock: "900",
-    status: false,
-    addOns: [],
-  },
-  {
-    id: "4",
-    title: "Combo Cheese Burger 180g + Batatas Rusticas + CocaCola",
-    image: "🍔",
-    tags: ["Under review", "In marketing activities"],
-    availability: "Available from December 25th, 11:00 AM",
-    deliveryPrice: "R$100.00",
-    pickupPrice: "R$80.00",
-    stock: "0",
-    status: true,
-    addOns: [],
-  },
-];
+const itemsByCategory: Record<number, MenuItem[]> = {
+  0: [ // Os Burgers Mais Pedidos da 99 - 5 items
+    { id: "0-1", title: "Smash Burger Duplo 200g", image: "🍔", tags: ["In marketing activities"], deliveryPrice: "R$32.90", pickupPrice: "R$28.90", stock: "Unlimited", status: true, addOns: [] },
+    { id: "0-2", title: "Smash Burger Triplo 300g", image: "🍔", tags: [], deliveryPrice: "R$42.90", pickupPrice: "R$38.90", stock: "500", status: true, addOns: [] },
+    { id: "0-3", title: "Smash Burger Bacon & Cheddar", image: "🍔", tags: ["Under review"], deliveryPrice: "R$36.90", pickupPrice: "R$32.90", stock: "300", status: true, addOns: [] },
+    { id: "0-4", title: "Smash Burger Egg", image: "🍔", tags: [], deliveryPrice: "R$34.90", pickupPrice: "R$30.90", stock: "200", status: false, addOns: [] },
+    { id: "0-5", title: "Smash Burger Catupiry", image: "🍔", tags: [], deliveryPrice: "R$35.90", pickupPrice: "R$31.90", stock: "Unlimited", status: true, addOns: [] },
+  ],
+  1: [ // Combos Irresistíveis - 4 items
+    {
+      id: "1-1", title: "Combo Smash Burger + Batata + CocaCola", image: "🍔",
+      tags: ["Under review", "In marketing activities"], availability: "Available from December 25th, 11:00 AM",
+      deliveryPrice: "R$9999.99", pickupPrice: "R$9999.99", stock: "Unlimited", status: true, addOns: [],
+    },
+    {
+      id: "1-2", title: "Combo N! Crispy Chicken + Batata + CocaCola", image: "🍗",
+      tags: ["In marketing activities", "Cannot be sold independently"],
+      deliveryPrice: "R$100.00", pickupPrice: "R$80.00", stock: "900", status: true,
+      addOns: [
+        {
+          name: "Snack (1of3)", required: true,
+          items: [
+            { name: "Chicken Pop - Sobrecoxas Empandas C", deliveryPrice: "R$40.00", pickupPrice: "R$36.00", stock: "Unlimited", status: true },
+            { name: "Chicken Pop - Molho Barbec", deliveryPrice: "R$20.00", pickupPrice: "R$18.00", stock: "0", status: true, warning: "Low stock" },
+            { name: "Chicken Pop - Crocantes", deliveryPrice: "R$20.00", pickupPrice: "R$18.00", stock: "999", status: true },
+          ],
+        },
+        {
+          name: "Salad (1of3)", required: false,
+          items: [
+            { name: "Vegatable Salada", deliveryPrice: "R$40.00", pickupPrice: "R$36.00", stock: "999", status: false, warning: "This dish contained prohibited words and has been removed from the platform." },
+            { name: "Chesse Salada", deliveryPrice: "R$20.00", pickupPrice: "R$18.00", stock: "999", status: true },
+            { name: "Classic Salad", deliveryPrice: "R$20.00", pickupPrice: "R$18.00", stock: "999", status: true },
+          ],
+        },
+        {
+          name: "Beverage (1of2)", required: false,
+          items: [
+            { name: "CocaCola", deliveryPrice: "R$6.00", pickupPrice: "R$4.00", stock: "999", status: true },
+            { name: "Sprite", deliveryPrice: "R$6.00", pickupPrice: "R$4.00", stock: "999", status: true },
+          ],
+        },
+      ],
+    },
+    { id: "1-3", title: "Combo Cheese Burger 120g + Batatas Rusticas + CocaCola", image: "🍔", tags: [], deliveryPrice: "R$100.00", pickupPrice: "R$80.00", stock: "900", status: false, addOns: [] },
+    { id: "1-4", title: "Combo Cheese Burger 180g + Batatas Rusticas + CocaCola", image: "🍔", tags: ["Under review", "In marketing activities"], availability: "Available from December 25th, 11:00 AM", deliveryPrice: "R$100.00", pickupPrice: "R$80.00", stock: "0", status: true, addOns: [] },
+  ],
+  2: [ // Edição Limitada - 1 item
+    { id: "2-1", title: "Burger Trufado Especial Edição Natalina", image: "🎄", tags: ["Under review"], availability: "Available from December 20th, 06:00 PM", deliveryPrice: "R$59.90", pickupPrice: "R$49.90", stock: "50", status: true, addOns: [] },
+  ],
+  3: [ // Escolhas Impossíveis de Errar - 6 items
+    { id: "3-1", title: "Classic Burger 150g", image: "🍔", tags: [], deliveryPrice: "R$24.90", pickupPrice: "R$20.90", stock: "Unlimited", status: true, addOns: [] },
+    { id: "3-2", title: "Bacon Burger 150g", image: "🥓", tags: ["In marketing activities"], deliveryPrice: "R$28.90", pickupPrice: "R$24.90", stock: "800", status: true, addOns: [] },
+    { id: "3-3", title: "Chicken Burger Crispy", image: "🍗", tags: [], deliveryPrice: "R$26.90", pickupPrice: "R$22.90", stock: "600", status: true, addOns: [] },
+    { id: "3-4", title: "Veggie Burger", image: "🥬", tags: [], deliveryPrice: "R$25.90", pickupPrice: "R$21.90", stock: "400", status: true, addOns: [] },
+    { id: "3-5", title: "Fish Burger Empanado", image: "🐟", tags: [], deliveryPrice: "R$29.90", pickupPrice: "R$25.90", stock: "200", status: false, addOns: [] },
+    { id: "3-6", title: "Double Cheese Burger 240g", image: "🧀", tags: ["Under review"], deliveryPrice: "R$38.90", pickupPrice: "R$34.90", stock: "0", status: true, addOns: [] },
+  ],
+  4: [ // Originais N! Burger - 2 items
+    { id: "4-1", title: "N! Burger Original 200g", image: "🍔", tags: ["In marketing activities"], deliveryPrice: "R$34.90", pickupPrice: "R$30.90", stock: "Unlimited", status: true, addOns: [] },
+    { id: "4-2", title: "N! Burger Especial com Molho Secreto", image: "🍔", tags: [], deliveryPrice: "R$39.90", pickupPrice: "R$35.90", stock: "350", status: true, addOns: [] },
+  ],
+  5: [ // Clássicos - 4 items
+    { id: "5-1", title: "Hamburger Clássico 120g", image: "🍔", tags: [], deliveryPrice: "R$19.90", pickupPrice: "R$16.90", stock: "Unlimited", status: true, addOns: [] },
+    { id: "5-2", title: "Cheeseburger Clássico 120g", image: "🧀", tags: [], deliveryPrice: "R$22.90", pickupPrice: "R$19.90", stock: "Unlimited", status: true, addOns: [] },
+    { id: "5-3", title: "X-Bacon Clássico 120g", image: "🥓", tags: [], deliveryPrice: "R$26.90", pickupPrice: "R$22.90", stock: "500", status: true, addOns: [] },
+    { id: "5-4", title: "X-Tudo Clássico 150g", image: "🍔", tags: ["Under review"], deliveryPrice: "R$32.90", pickupPrice: "R$28.90", stock: "300", status: false, addOns: [] },
+  ],
+  6: [ // Acompanhamentos - 4 items
+    { id: "6-1", title: "Batata Frita Média", image: "🍟", tags: [], deliveryPrice: "R$14.90", pickupPrice: "R$12.90", stock: "Unlimited", status: true, addOns: [] },
+    { id: "6-2", title: "Batata Rústica com Cheddar e Bacon", image: "🍟", tags: ["In marketing activities"], deliveryPrice: "R$22.90", pickupPrice: "R$18.90", stock: "400", status: true, addOns: [] },
+    { id: "6-3", title: "Onion Rings 12un", image: "🧅", tags: [], deliveryPrice: "R$18.90", pickupPrice: "R$15.90", stock: "250", status: true, addOns: [] },
+    { id: "6-4", title: "Nuggets de Frango 10un", image: "🍗", tags: [], deliveryPrice: "R$16.90", pickupPrice: "R$13.90", stock: "0", status: false, addOns: [] },
+  ],
+  7: [ // Vai Um Docinho Aí - 1 item
+    { id: "7-1", title: "Brownie com Sorvete de Baunilha", image: "🍫", tags: [], deliveryPrice: "R$18.90", pickupPrice: "R$15.90", stock: "150", status: true, addOns: [] },
+  ],
+};
 
 const MenuListPage = () => {
   const navigate = useNavigate();
@@ -351,7 +354,7 @@ const MenuListPage = () => {
 
             {/* Items */}
             <div className="divide-y divide-border">
-              {sampleItems.map((item) => (
+              {(itemsByCategory[selectedCategory] || []).map((item) => (
                 <div key={item.id}>
                   {/* Main item row */}
                   <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-3">
