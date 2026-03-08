@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminLayout from "@/components/AdminLayout";
 import { ArrowLeft, ImagePlus, Plus } from "lucide-react";
@@ -112,27 +112,85 @@ const NewItemPage = () => {
     navigate("/");
   };
 
+  const [activeTab, setActiveTab] = useState<"basic" | "modifications" | "sales">("basic");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const basicInfoRef = useRef<HTMLDivElement>(null);
+  const modificationsRef = useRef<HTMLDivElement>(null);
+  const salesInfoRef = useRef<HTMLDivElement>(null);
+
+  const scrollToSection = (section: "basic" | "modifications" | "sales") => {
+    setActiveTab(section);
+    const refMap = { basic: basicInfoRef, modifications: modificationsRef, sales: salesInfoRef };
+    const target = refMap[section].current;
+    const container = scrollContainerRef.current?.closest("main");
+    if (target && container) {
+      const headerHeight = 90; // sticky header height approx
+      const targetTop = target.offsetTop;
+      container.scrollTo({
+        top: targetTop - headerHeight,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const handleScroll = useCallback(() => {
+    const container = scrollContainerRef.current?.closest("main");
+    if (!container) return;
+    const scrollTop = container.scrollTop;
+    const headerHeight = 100;
+    const salesTop = salesInfoRef.current?.offsetTop ?? Infinity;
+    const modsTop = modificationsRef.current?.offsetTop ?? Infinity;
+    if (scrollTop + headerHeight >= salesTop) {
+      setActiveTab("sales");
+    } else if (scrollTop + headerHeight >= modsTop) {
+      setActiveTab("modifications");
+    } else {
+      setActiveTab("basic");
+    }
+  }, []);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current?.closest("main");
+    if (!container) return;
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
   return (
     <AdminLayout>
-      <div className="p-6">
-        {/* Header */}
-        <div className="mb-4 flex items-center gap-3">
-          <button onClick={() => navigate("/")} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </button>
-          <span className="text-muted-foreground">|</span>
-          <span className="text-sm font-medium">{isEdit ? "Edit Item" : "New Item"}</span>
+      {/* Sticky header */}
+      <div className="sticky top-0 z-10 bg-background border-b border-border">
+        <div className="px-6 pt-4 pb-0">
+          <div className="mb-3 flex items-center gap-3">
+            <button onClick={() => navigate("/")} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </button>
+            <span className="text-muted-foreground">|</span>
+            <span className="text-sm font-medium">{isEdit ? "Edit Item" : "New Item"}</span>
+          </div>
+          <div className="flex gap-6">
+            <button
+              onClick={() => scrollToSection("basic")}
+              className={`pb-2 text-sm font-semibold transition-colors ${activeTab === "basic" ? "border-b-2 border-foreground text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >Basic Info</button>
+            <button
+              onClick={() => scrollToSection("modifications")}
+              className={`pb-2 text-sm font-semibold transition-colors ${activeTab === "modifications" ? "border-b-2 border-foreground text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >Modifications</button>
+            <button
+              onClick={() => scrollToSection("sales")}
+              className={`pb-2 text-sm font-semibold transition-colors ${activeTab === "sales" ? "border-b-2 border-foreground text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >Sales Info</button>
+          </div>
         </div>
+      </div>
 
-        {/* Tabs */}
-        <div className="mb-6 flex gap-6 border-b border-border">
-          <button className="border-b-2 border-foreground pb-2 text-sm font-semibold">Basic Info</button>
-          <button className="pb-2 text-sm text-muted-foreground hover:text-foreground">Modifications</button>
-          <button className="pb-2 text-sm text-muted-foreground hover:text-foreground">Sales Info</button>
-        </div>
-
+      {/* Form content */}
+      <div ref={scrollContainerRef} className="p-6">
         <div className="mx-auto max-w-2xl space-y-6">
+          {/* === BASIC INFO === */}
+          <div ref={basicInfoRef} className="space-y-6">
           {/* Item Type */}
           <div>
             <label className="mb-2 block text-sm font-medium">
@@ -344,6 +402,10 @@ const NewItemPage = () => {
             </RadioGroup>
           </div>
 
+          </div>{/* end basic info section */}
+
+          {/* === MODIFICATIONS SECTION === */}
+          <div ref={modificationsRef} className="space-y-6">
           {/* Modification Group */}
           <div>
             <label className="mb-2 block text-sm font-medium">Modification group</label>
@@ -353,6 +415,10 @@ const NewItemPage = () => {
             </Button>
           </div>
 
+          </div>{/* end modifications section */}
+
+          {/* === SALES INFO SECTION === */}
+          <div ref={salesInfoRef} className="space-y-6">
           {/* Price */}
           <div>
             <label className="mb-1 block text-sm font-medium">
@@ -475,8 +541,10 @@ const NewItemPage = () => {
             </RadioGroup>
           </div>
 
-        </div>
-      </div>
+          </div>{/* end sales info section */}
+
+        </div>{/* end max-w-2xl */}
+      </div>{/* end form content */}
 
       {/* Sticky bottom action buttons */}
       <div className="sticky bottom-0 border-t border-border bg-background px-6 py-4">
