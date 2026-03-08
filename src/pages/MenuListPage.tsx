@@ -441,7 +441,10 @@ const MenuListPage = () => {
                   {categories[selectedCategory].count} items
                 </span>
               </h2>
-              <button className="rounded border border-border p-1 hover:bg-secondary">
+              <button
+                onClick={() => setItemSortDialogOpen(true)}
+                className="rounded border border-border p-1 hover:bg-secondary"
+              >
                 <List className="h-3.5 w-3.5 text-muted-foreground" />
               </button>
             </div>
