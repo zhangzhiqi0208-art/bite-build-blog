@@ -185,9 +185,13 @@ const NewItemPage = () => {
                 maxLength={50}
                 value={itemName}
                 onChange={(e) => setItemName(e.target.value)}
+                className={submitted && !itemName.trim() ? "border-destructive focus-visible:ring-destructive" : ""}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{itemName.length}/50</span>
             </div>
+            {submitted && !itemName.trim() && (
+              <p className="mt-1 text-xs text-destructive">Item name is required</p>
+            )}
           </div>
 
           {/* PDV Code */}
