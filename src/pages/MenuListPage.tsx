@@ -551,7 +551,6 @@ const MenuListPage = () => {
             )}
           </div>
         </div>
-        </div>
 
       {/* Edit Category Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
