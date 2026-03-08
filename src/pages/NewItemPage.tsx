@@ -39,6 +39,7 @@ const NewItemPage = () => {
   const [containsAlcohol, setContainsAlcohol] = useState("no");
   const [saleTimeType, setSaleTimeType] = useState("weekly");
   const [selectedAllergens, setSelectedAllergens] = useState<number[]>([]);
+  const [submitted, setSubmitted] = useState(false);
 
   // Load existing data for edit mode
   useEffect(() => {
