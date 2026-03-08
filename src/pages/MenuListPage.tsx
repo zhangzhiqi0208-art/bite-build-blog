@@ -163,6 +163,9 @@ const MenuListPage = () => {
   // Sort category dialog state
   const [sortDialogOpen, setSortDialogOpen] = useState(false);
 
+  // Item sort dialog state
+  const [itemSortDialogOpen, setItemSortDialogOpen] = useState(false);
+
   const toggleExpand = (id: string) => {
     setExpandedItems((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
