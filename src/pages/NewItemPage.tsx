@@ -183,7 +183,7 @@ const NewItemPage = () => {
         <div className="p-6">
         <div className="mx-auto max-w-2xl space-y-6">
           {/* === BASIC INFO === */}
-          <div ref={basicInfoRef}>
+          <div ref={basicInfoRef} className="space-y-6">
           {/* Item Type */}
           <div>
             <label className="mb-2 block text-sm font-medium">
