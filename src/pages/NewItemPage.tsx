@@ -539,6 +539,8 @@ const NewItemPage = () => {
                 <Label htmlFor="time-specific">Specific time</Label>
               </div>
             </RadioGroup>
+          </div>
+
           </div>{/* end sales info section */}
 
         </div>{/* end max-w-2xl */}
