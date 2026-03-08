@@ -24,7 +24,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { TruncatedText } from "@/components/TruncatedText";
 interface MenuItem {
   id: string;
   title: string;
