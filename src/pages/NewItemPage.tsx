@@ -532,10 +532,11 @@ const NewItemPage = () => {
                 <Label htmlFor="time-specific">Specific time</Label>
               </div>
             </RadioGroup>
-          </div>
+          </div>{/* end sales info section */}
 
         </div>
-      </div>
+        </div>
+        </div>{/* end scrollable content */}
 
       {/* Sticky bottom action buttons */}
       <div className="sticky bottom-0 border-t border-border bg-background px-6 py-4">
