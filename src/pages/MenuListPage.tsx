@@ -153,6 +153,11 @@ const MenuListPage = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingCategoryIndex, setDeletingCategoryIndex] = useState<number | null>(null);
 
+  // Add category dialog state
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const addInputRef = useRef<HTMLInputElement>(null);
+
   const toggleExpand = (id: string) => {
     setExpandedItems((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
