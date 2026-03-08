@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback } from "react";
-import { ArrowUpToLine, GripVertical } from "lucide-react";
+import { useState, useRef } from "react";
+import { ArrowUpToLine, GripVertical, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
