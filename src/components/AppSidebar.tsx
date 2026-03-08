@@ -66,11 +66,11 @@ export const AppSidebar = () => {
     <aside className="flex w-56 flex-col border-r border-sidebar-border bg-sidebar">
       <div className="flex-1 overflow-auto px-3 py-4">
         <button
-          onClick={() => navigate("/")}
-          className="mb-4 flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-secondary"
+          disabled
+          className="mb-4 flex w-full cursor-not-allowed items-center gap-2 rounded-lg px-3 py-2 text-muted-foreground/50"
         >
-          <LayoutDashboard className="h-5 w-5 text-sidebar-foreground" />
-          <span className="text-sm font-medium text-sidebar-foreground">Overview</span>
+          <LayoutDashboard className="h-5 w-5" />
+          <span className="text-sm font-medium">Overview</span>
         </button>
 
         {navSections.map((section, sIdx) => (
@@ -80,14 +80,18 @@ export const AppSidebar = () => {
             </p>
             {section.items.map((item) => {
               const active = isActive(item.path);
+              const disabled = item.path !== "/";
               return (
                 <button
                   key={item.path}
-                  onClick={() => navigate(item.path)}
+                  onClick={() => !disabled && navigate(item.path)}
+                  disabled={disabled}
                   className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
                     active
                       ? "bg-primary font-semibold text-primary-foreground"
-                      : "text-sidebar-foreground hover:bg-secondary"
+                      : disabled
+                        ? "cursor-not-allowed text-muted-foreground/50"
+                        : "text-sidebar-foreground hover:bg-secondary"
                   }`}
                 >
                   <item.icon className="h-5 w-5" />
