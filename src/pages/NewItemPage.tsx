@@ -67,16 +67,8 @@ const NewItemPage = () => {
   };
 
   const handleSubmit = () => {
-    if (!itemName.trim()) {
-      toast({ title: "Item Name is required", variant: "destructive" });
-      return;
-    }
-    if (!selectedCategoryIdx) {
-      toast({ title: "Category is required", variant: "destructive" });
-      return;
-    }
-    if (!deliveryPrice.trim()) {
-      toast({ title: "Delivery price is required", variant: "destructive" });
+    setSubmitted(true);
+    if (!itemName.trim() || !selectedCategoryIdx || !deliveryPrice.trim()) {
       return;
     }
 
