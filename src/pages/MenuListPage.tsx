@@ -450,7 +450,42 @@ const MenuListPage = () => {
                             )}
                           </div>
                         </div>
-                        <span className={`text-right text-sm ${!item.status ? "text-muted-foreground/50" : ""}`}>{item.deliveryPrice}</span>
+                        {editingPriceItemId === item.id ? (
+                          <div className="flex flex-col items-end">
+                            <div className="flex items-center gap-1">
+                              <Input
+                                ref={priceInputRef}
+                                value={editingPriceValue}
+                                onChange={(e) => {
+                                  setEditingPriceValue(e.target.value);
+                                  if (e.target.value.trim()) setEditingPriceError(false);
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") confirmEditPrice();
+                                  if (e.key === "Escape") cancelEditPrice();
+                                }}
+                                className={`h-7 w-28 text-right text-sm ${editingPriceError ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                                placeholder="Please enter"
+                              />
+                              <button onClick={confirmEditPrice} className="p-0.5 text-muted-foreground hover:text-foreground">
+                                <Check className="h-4 w-4" />
+                              </button>
+                              <button onClick={cancelEditPrice} className="p-0.5 text-muted-foreground hover:text-foreground">
+                                <X className="h-4 w-4" />
+                              </button>
+                            </div>
+                            {editingPriceError && (
+                              <p className="mt-1 text-xs text-destructive">No puede estar vacío</p>
+                            )}
+                          </div>
+                        ) : (
+                          <span
+                            className={`cursor-pointer rounded px-2 py-1 text-right text-sm transition-colors hover:bg-secondary ${!item.status ? "text-muted-foreground/50" : ""}`}
+                            onClick={() => startEditPrice(item)}
+                          >
+                            {item.deliveryPrice}
+                          </span>
+                        )}
                         <span className={`text-right text-sm ${!item.status ? "text-muted-foreground/50" : ""}`}>{item.pickupPrice}</span>
                         <span className={`text-right text-sm ${!item.status ? "text-muted-foreground/50" : ""}`}>{item.stock}</span>
                         <div className="flex justify-center" style={{ opacity: !item.status ? 2.5 : 1 }}>
