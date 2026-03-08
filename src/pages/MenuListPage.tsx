@@ -57,7 +57,9 @@ const MenuListPage = () => {
   const [editingPriceItemId, setEditingPriceItemId] = useState<string | null>(null);
   const [editingPriceValue, setEditingPriceValue] = useState("");
   const [editingPriceError, setEditingPriceError] = useState(false);
+  const [editingPriceWarning, setEditingPriceWarning] = useState(false);
   const priceInputRef = useRef<HTMLInputElement>(null);
+  const priceEditContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (editingPriceItemId && priceInputRef.current) {
@@ -66,17 +68,30 @@ const MenuListPage = () => {
     }
   }, [editingPriceItemId]);
 
+  // Click outside handler: show warning instead of closing
+  useEffect(() => {
+    if (!editingPriceItemId) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (priceEditContainerRef.current && !priceEditContainerRef.current.contains(e.target as Node)) {
+        setEditingPriceWarning(true);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [editingPriceItemId]);
+
   const startEditPrice = (item: MenuItem) => {
     setEditingPriceItemId(item.id);
-    // Strip currency prefix for editing
     const raw = item.deliveryPrice.replace(/^R\$/, "");
     setEditingPriceValue(raw);
     setEditingPriceError(false);
+    setEditingPriceWarning(false);
   };
 
   const confirmEditPrice = () => {
     if (!editingPriceValue.trim()) {
       setEditingPriceError(true);
+      setEditingPriceWarning(false);
       return;
     }
     if (editingPriceItemId) {
@@ -97,6 +112,7 @@ const MenuListPage = () => {
     setEditingPriceItemId(null);
     setEditingPriceValue("");
     setEditingPriceError(false);
+    setEditingPriceWarning(false);
   };
 
   const toggleExpand = (id: string) => {
@@ -453,7 +469,7 @@ const MenuListPage = () => {
                           </div>
                         </div>
                         {editingPriceItemId === item.id ? (
-                          <div className="flex flex-col items-end">
+                          <div ref={priceEditContainerRef} className="flex flex-col items-end">
                             <div className="flex items-center gap-1">
                               <Input
                                 ref={priceInputRef}
@@ -461,12 +477,13 @@ const MenuListPage = () => {
                                 onChange={(e) => {
                                   setEditingPriceValue(e.target.value);
                                   if (e.target.value.trim()) setEditingPriceError(false);
+                                  setEditingPriceWarning(false);
                                 }}
                                 onKeyDown={(e) => {
                                   if (e.key === "Enter") confirmEditPrice();
                                   if (e.key === "Escape") cancelEditPrice();
                                 }}
-                                className={`h-7 w-28 text-right text-sm ${editingPriceError ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                                className={`h-7 w-28 text-right text-sm ${editingPriceError ? "border-destructive focus-visible:ring-destructive" : editingPriceWarning ? "border-orange-400 focus-visible:ring-orange-400" : ""}`}
                                 placeholder="Please enter"
                               />
                               <button onClick={confirmEditPrice} className="p-0.5 text-muted-foreground hover:text-foreground">
@@ -478,6 +495,9 @@ const MenuListPage = () => {
                             </div>
                             {editingPriceError && (
                               <p className="mt-1 text-xs text-destructive">No puede estar vacío</p>
+                            )}
+                            {editingPriceWarning && !editingPriceError && (
+                              <p className="mt-1 text-xs text-orange-400">Please save first.</p>
                             )}
                           </div>
                         ) : (
