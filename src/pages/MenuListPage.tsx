@@ -438,6 +438,16 @@ const MenuListPage = () => {
               </button>
             </div>
 
+            {/* Table header */}
+            <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] gap-2 border-b border-border px-2 pb-2 text-xs text-muted-foreground">
+              <span>Title</span>
+              <span className="text-right">Delivery</span>
+              <span className="text-right">Pick-up</span>
+              <span className="text-right">Stock</span>
+              <span className="text-center">Status</span>
+              <span></span>
+            </div>
+
             {(categoryItems[selectedCategory] || []).length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center py-20">
                 <img src={emptyMenuImage} alt="Empty menu" className="mb-6 h-32 w-32 object-contain" />
@@ -452,15 +462,6 @@ const MenuListPage = () => {
               </div>
             ) : (
               <>
-                {/* Table header */}
-                <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] gap-2 border-b border-border px-2 pb-2 text-xs text-muted-foreground">
-                  <span>Title</span>
-                  <span className="text-right">Delivery</span>
-                  <span className="text-right">Pick-up</span>
-                  <span className="text-right">Stock</span>
-                  <span className="text-center">Status</span>
-                  <span></span>
-                </div>
 
                 {/* Items */}
                 <div className="divide-y divide-border">
