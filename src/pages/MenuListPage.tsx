@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "@/components/AdminLayout";
 import { Search, Plus, Settings2, MoreHorizontal, Clock, List, Pencil, Trash2, Clock4 } from "lucide-react";
@@ -12,6 +12,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 interface MenuItem {
   id: string;
   title: string;
@@ -38,7 +45,7 @@ interface AddOnGroup {
   }[];
 }
 
-const categories = [
+const initialCategories = [
   { name: "Os Burgers Mais Pedidos da 99", count: 5 },
   { name: "Combos Irresistíveis", count: 4 },
   { name: "Edição Limitada - Prove Antes Q...", count: 1 },
@@ -127,14 +134,47 @@ const sampleItems: MenuItem[] = [
 
 const MenuListPage = () => {
   const navigate = useNavigate();
+  const [categories, setCategories] = useState(initialCategories);
   const [selectedCategory, setSelectedCategory] = useState(1);
   const [expandedItems, setExpandedItems] = useState<string[]>(["2"]);
+  
+  // Edit category dialog state
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingCategoryIndex, setEditingCategoryIndex] = useState<number | null>(null);
+  const [editCategoryName, setEditCategoryName] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const toggleExpand = (id: string) => {
     setExpandedItems((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
+
+  const handleEditCategory = (idx: number) => {
+    setEditingCategoryIndex(idx);
+    setEditCategoryName(categories[idx].name);
+    setEditDialogOpen(true);
+  };
+
+  const handleSaveCategory = () => {
+    if (editCategoryName.trim() === "" || editingCategoryIndex === null) return;
+    
+    setCategories(prev => prev.map((cat, idx) => 
+      idx === editingCategoryIndex 
+        ? { ...cat, name: editCategoryName.trim() }
+        : cat
+    ));
+    setEditDialogOpen(false);
+    setEditingCategoryIndex(null);
+    setEditCategoryName("");
+  };
+
+  useEffect(() => {
+    if (editDialogOpen && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editDialogOpen]);
 
   return (
     <AdminLayout>
@@ -259,7 +299,13 @@ const MenuListPage = () => {
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" side="right" className="w-40">
-                      <DropdownMenuItem className="gap-2 cursor-pointer">
+                      <DropdownMenuItem 
+                        className="gap-2 cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditCategory(idx);
+                        }}
+                      >
                         <Pencil className="h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
@@ -396,6 +442,44 @@ const MenuListPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Category Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit category</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              ref={inputRef}
+              value={editCategoryName}
+              onChange={(e) => setEditCategoryName(e.target.value)}
+              placeholder="Category name"
+              className="h-12"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && editCategoryName.trim()) {
+                  handleSaveCategory();
+                }
+              }}
+            />
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setEditDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveCategory}
+              disabled={!editCategoryName.trim()}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              OK
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };
