@@ -247,7 +247,7 @@ const NewItemPage = () => {
               Store-defined Category <span className="text-destructive">*</span> ℹ
             </label>
             <Select value={selectedCategoryIdx} onValueChange={setSelectedCategoryIdx}>
-              <SelectTrigger>
+              <SelectTrigger className={submitted && !selectedCategoryIdx ? "border-destructive focus:ring-destructive" : ""}>
                 <SelectValue placeholder="Please select" />
               </SelectTrigger>
               <SelectContent>
@@ -256,6 +256,9 @@ const NewItemPage = () => {
                 ))}
               </SelectContent>
             </Select>
+            {submitted && !selectedCategoryIdx && (
+              <p className="mt-1 text-xs text-destructive">Category is required</p>
+            )}
           </div>
 
           {/* Item Classification */}
