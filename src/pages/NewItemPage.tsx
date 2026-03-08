@@ -186,9 +186,8 @@ const NewItemPage = () => {
         </div>
       </div>
 
-      {/* Scrollable form content */}
-      <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-auto">
-        <div className="p-6">
+      {/* Form content */}
+      <div ref={scrollContainerRef} className="p-6">
         <div className="mx-auto max-w-2xl space-y-6">
           {/* === BASIC INFO === */}
           <div ref={basicInfoRef} className="space-y-6">
