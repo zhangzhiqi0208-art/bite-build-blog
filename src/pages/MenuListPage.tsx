@@ -20,6 +20,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { TruncatedText } from "@/components/TruncatedText";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 interface MenuItem {
   id: string;
   title: string;
@@ -153,6 +154,11 @@ const MenuListPage = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingCategoryIndex, setDeletingCategoryIndex] = useState<number | null>(null);
 
+  // Add category dialog state
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const addInputRef = useRef<HTMLInputElement>(null);
+
   const toggleExpand = (id: string) => {
     setExpandedItems((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
@@ -203,6 +209,22 @@ const MenuListPage = () => {
     setDeleteDialogOpen(false);
     setDeletingCategoryIndex(null);
   };
+
+  const handleAddCategory = () => {
+    if (!newCategoryName.trim()) return;
+    const newIdx = categories.length;
+    setCategories(prev => [...prev, { name: newCategoryName.trim(), count: 0 }]);
+    setCategoryItems(prev => ({ ...prev, [newIdx]: [] }));
+    setSelectedCategory(newIdx);
+    setAddDialogOpen(false);
+    setNewCategoryName("");
+  };
+
+  useEffect(() => {
+    if (addDialogOpen && addInputRef.current) {
+      addInputRef.current.focus();
+    }
+  }, [addDialogOpen]);
 
   useEffect(() => {
     if (editDialogOpen && inputRef.current) {
@@ -299,12 +321,30 @@ const MenuListPage = () => {
             <div className="mb-2 flex items-center justify-between">
               <h2 className="text-sm font-semibold">Category</h2>
               <div className="flex gap-1">
-                <button className="rounded border border-border p-1 hover:bg-secondary">
-                  <List className="h-3.5 w-3.5 text-muted-foreground" />
-                </button>
-                <button className="rounded border border-border p-1 hover:bg-secondary">
-                  <Plus className="h-3.5 w-3.5 text-muted-foreground" />
-                </button>
+                <TooltipProvider delayDuration={300}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button className="rounded border border-border p-1 hover:bg-secondary">
+                        <List className="h-3.5 w-3.5 text-muted-foreground" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top"><p>Sort categories</p></TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider delayDuration={300}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        className="rounded border border-border p-1 hover:bg-secondary"
+                        onClick={() => setAddDialogOpen(true)}
+                      >
+                        <Plus className="h-3.5 w-3.5 text-muted-foreground" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top"><p>Add category</p></TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               </div>
             </div>
             <div className="space-y-0.5">
@@ -482,7 +522,6 @@ const MenuListPage = () => {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Edit Category Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
@@ -540,6 +579,41 @@ const MenuListPage = () => {
             </Button>
             <Button
               onClick={handleConfirmDelete}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              OK
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Category Dialog */}
+      <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add category</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              ref={addInputRef}
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              placeholder="Please enter the category name"
+              className="h-12"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && newCategoryName.trim()) {
+                  handleAddCategory();
+                }
+              }}
+            />
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => { setAddDialogOpen(false); setNewCategoryName(""); }}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddCategory}
+              disabled={!newCategoryName.trim()}
               className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
               OK
