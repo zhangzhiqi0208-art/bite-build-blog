@@ -372,7 +372,10 @@ const MenuListPage = () => {
                             {item.image}
                           </div>
                           <div>
-                            <p className={`text-sm font-medium ${!item.status ? "text-muted-foreground/50" : ""}`}>{item.title}</p>
+                            <p
+                              className={`text-sm font-medium cursor-pointer hover:underline ${!item.status ? "text-muted-foreground/50" : ""}`}
+                              onClick={() => navigate(`/menu/edit/${item.id}`)}
+                            >{item.title}</p>
                             {(item.reviewStatus || item.marketingActivity || item.availability || item.notSoldIndependently) && (
                               <div className="mt-1 flex flex-wrap gap-1.5">
                                 {item.reviewStatus === "under_review" && (
