@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ArrowUpToLine, GripVertical, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +26,10 @@ export const CategorySortDialog = ({
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
   const [draggingIdx, setDraggingIdx] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (open) setItems([...categories]);
+  }, [open, categories]);
 
   // Reset items when dialog opens
   const handleOpenChange = (val: boolean) => {
