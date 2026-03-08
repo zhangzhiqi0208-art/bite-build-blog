@@ -478,21 +478,33 @@ const MenuListPage = () => {
                           </div>
                           <div>
                             <p className="text-sm font-medium">{item.title}</p>
-                            <div className="mt-0.5 flex flex-wrap gap-1">
-                              {item.tags.map((tag, i) => (
-                                <span
-                                  key={i}
-                                  className="rounded-full bg-secondary px-2 py-0.5 text-[10px] text-muted-foreground"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                            {item.availability && (
-                              <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
-                                <Clock className="h-3 w-3" />
-                                {item.availability}
-                              </p>
+                            {(item.reviewStatus || item.marketingActivity || item.availability || item.notSoldIndependently) && (
+                              <div className="mt-1 flex flex-wrap gap-1.5">
+                                {item.reviewStatus === "under_review" && (
+                                  <span className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground">
+                                    <Hourglass className="h-3 w-3" />
+                                    Under review
+                                  </span>
+                                )}
+                                {item.marketingActivity && (
+                                  <span className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground">
+                                    <Megaphone className="h-3 w-3" />
+                                    In marketing activities
+                                  </span>
+                                )}
+                                {item.availability && (
+                                  <span className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground">
+                                    <Clock className="h-3 w-3" />
+                                    {item.availability}
+                                  </span>
+                                )}
+                                {item.notSoldIndependently && (
+                                  <span className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground">
+                                    <Lock className="h-3 w-3" />
+                                    Cannot be sold independently
+                                  </span>
+                                )}
+                              </div>
                             )}
                           </div>
                         </div>
