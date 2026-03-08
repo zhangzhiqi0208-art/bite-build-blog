@@ -354,7 +354,7 @@ const MenuListPage = () => {
 
             {/* Items */}
             <div className="divide-y divide-border">
-              {sampleItems.map((item) => (
+              {(itemsByCategory[selectedCategory] || []).map((item) => (
                 <div key={item.id}>
                   {/* Main item row */}
                   <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-3">
