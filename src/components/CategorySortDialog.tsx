@@ -72,7 +72,7 @@ export const CategorySortDialog = ({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
-        className="sm:max-w-lg flex flex-col p-0"
+        className="sm:max-w-lg flex flex-col p-0 [&>button.absolute]:hidden"
         style={{ maxHeight: "calc(100vh - 120px)" }}
       >
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-border">
