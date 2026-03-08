@@ -209,6 +209,22 @@ const MenuListPage = () => {
     setDeletingCategoryIndex(null);
   };
 
+  const handleAddCategory = () => {
+    if (!newCategoryName.trim()) return;
+    const newIdx = categories.length;
+    setCategories(prev => [...prev, { name: newCategoryName.trim(), count: 0 }]);
+    setCategoryItems(prev => ({ ...prev, [newIdx]: [] }));
+    setSelectedCategory(newIdx);
+    setAddDialogOpen(false);
+    setNewCategoryName("");
+  };
+
+  useEffect(() => {
+    if (addDialogOpen && addInputRef.current) {
+      addInputRef.current.focus();
+    }
+  }, [addDialogOpen]);
+
   useEffect(() => {
     if (editDialogOpen && inputRef.current) {
       inputRef.current.focus();
