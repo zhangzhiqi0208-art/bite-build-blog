@@ -80,14 +80,18 @@ export const AppSidebar = () => {
             </p>
             {section.items.map((item) => {
               const active = isActive(item.path);
+              const disabled = item.path !== "/";
               return (
                 <button
                   key={item.path}
-                  onClick={() => navigate(item.path)}
+                  onClick={() => !disabled && navigate(item.path)}
+                  disabled={disabled}
                   className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
                     active
                       ? "bg-primary font-semibold text-primary-foreground"
-                      : "text-sidebar-foreground hover:bg-secondary"
+                      : disabled
+                        ? "cursor-not-allowed text-muted-foreground/50"
+                        : "text-sidebar-foreground hover:bg-secondary"
                   }`}
                 >
                   <item.icon className="h-5 w-5" />
