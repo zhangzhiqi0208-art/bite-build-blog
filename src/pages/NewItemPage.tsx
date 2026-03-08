@@ -112,27 +112,78 @@ const NewItemPage = () => {
     navigate("/");
   };
 
+  const [activeTab, setActiveTab] = useState<"basic" | "modifications" | "sales">("basic");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const basicInfoRef = useRef<HTMLDivElement>(null);
+  const modificationsRef = useRef<HTMLDivElement>(null);
+  const salesInfoRef = useRef<HTMLDivElement>(null);
+
+  const scrollToSection = (section: "basic" | "modifications" | "sales") => {
+    setActiveTab(section);
+    const refMap = { basic: basicInfoRef, modifications: modificationsRef, sales: salesInfoRef };
+    const target = refMap[section].current;
+    if (target && scrollContainerRef.current) {
+      const containerTop = scrollContainerRef.current.getBoundingClientRect().top;
+      const targetTop = target.getBoundingClientRect().top;
+      scrollContainerRef.current.scrollTo({
+        top: scrollContainerRef.current.scrollTop + (targetTop - containerTop),
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const handleScroll = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const containerTop = container.getBoundingClientRect().top;
+    const threshold = containerTop + 40;
+    const salesTop = salesInfoRef.current?.getBoundingClientRect().top ?? Infinity;
+    const modsTop = modificationsRef.current?.getBoundingClientRect().top ?? Infinity;
+    if (salesTop <= threshold) {
+      setActiveTab("sales");
+    } else if (modsTop <= threshold) {
+      setActiveTab("modifications");
+    } else {
+      setActiveTab("basic");
+    }
+  }, []);
+
   return (
     <AdminLayout>
-      <div className="p-6">
-        {/* Header */}
-        <div className="mb-4 flex items-center gap-3">
-          <button onClick={() => navigate("/")} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </button>
-          <span className="text-muted-foreground">|</span>
-          <span className="text-sm font-medium">{isEdit ? "Edit Item" : "New Item"}</span>
+      {/* Sticky header */}
+      <div className="sticky top-0 z-10 bg-background border-b border-border">
+        <div className="px-6 pt-4 pb-0">
+          <div className="mb-3 flex items-center gap-3">
+            <button onClick={() => navigate("/")} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </button>
+            <span className="text-muted-foreground">|</span>
+            <span className="text-sm font-medium">{isEdit ? "Edit Item" : "New Item"}</span>
+          </div>
+          <div className="flex gap-6">
+            <button
+              onClick={() => scrollToSection("basic")}
+              className={`pb-2 text-sm font-semibold transition-colors ${activeTab === "basic" ? "border-b-2 border-foreground text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >Basic Info</button>
+            <button
+              onClick={() => scrollToSection("modifications")}
+              className={`pb-2 text-sm font-semibold transition-colors ${activeTab === "modifications" ? "border-b-2 border-foreground text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >Modifications</button>
+            <button
+              onClick={() => scrollToSection("sales")}
+              className={`pb-2 text-sm font-semibold transition-colors ${activeTab === "sales" ? "border-b-2 border-foreground text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >Sales Info</button>
+          </div>
         </div>
+      </div>
 
-        {/* Tabs */}
-        <div className="mb-6 flex gap-6 border-b border-border">
-          <button className="border-b-2 border-foreground pb-2 text-sm font-semibold">Basic Info</button>
-          <button className="pb-2 text-sm text-muted-foreground hover:text-foreground">Modifications</button>
-          <button className="pb-2 text-sm text-muted-foreground hover:text-foreground">Sales Info</button>
-        </div>
-
+      {/* Scrollable form content */}
+      <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-auto">
+        <div className="p-6">
         <div className="mx-auto max-w-2xl space-y-6">
+          {/* === BASIC INFO === */}
+          <div ref={basicInfoRef}>
           {/* Item Type */}
           <div>
             <label className="mb-2 block text-sm font-medium">
