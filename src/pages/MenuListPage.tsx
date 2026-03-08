@@ -139,14 +139,19 @@ const itemsByCategory: Record<number, MenuItem[]> = {
 const MenuListPage = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState(initialCategories);
-  const [selectedCategory, setSelectedCategory] = useState(1);
-  const [expandedItems, setExpandedItems] = useState<string[]>(["2"]);
+  const [categoryItems, setCategoryItems] = useState(itemsByCategory);
+  const [selectedCategory, setSelectedCategory] = useState(0);
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
   
   // Edit category dialog state
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingCategoryIndex, setEditingCategoryIndex] = useState<number | null>(null);
   const [editCategoryName, setEditCategoryName] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Delete category dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingCategoryIndex, setDeletingCategoryIndex] = useState<number | null>(null);
 
   const toggleExpand = (id: string) => {
     setExpandedItems((prev) =>
