@@ -84,7 +84,7 @@ const MenuListPage = () => {
         const newItems = { ...prev };
         for (const key in newItems) {
           newItems[key] = newItems[key].map(item =>
-            item.id === editingPriceItemId ? { ...item, deliveryPrice: editingPriceValue.trim() } : item
+            item.id === editingPriceItemId ? { ...item, deliveryPrice: `R$${editingPriceValue.trim()}` } : item
           );
         }
         return newItems;
