@@ -23,6 +23,7 @@ import {
 import { TruncatedText } from "@/components/TruncatedText";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { CategorySortDialog } from "@/components/CategorySortDialog";
+import { ItemSortDialog } from "@/components/ItemSortDialog";
 interface MenuItem {
   id: string;
   title: string;
