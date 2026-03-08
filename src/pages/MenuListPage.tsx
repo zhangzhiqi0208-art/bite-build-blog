@@ -464,11 +464,11 @@ const MenuListPage = () => {
                 {/* Items */}
                 <div className="divide-y divide-border">
                   {(categoryItems[selectedCategory] || []).map((item) => (
-                    <div key={item.id} className={!item.status ? "opacity-40" : ""}>
+                    <div key={item.id}>
                       {/* Main item row */}
                       <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-3">
                         <div className="flex items-center gap-3">
-                          <div className={`flex h-12 w-12 items-center justify-center rounded-lg text-2xl ${!item.status ? "bg-secondary grayscale" : "bg-secondary"}`}>
+                          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-2xl">
                             {item.image}
                           </div>
                           <div>
