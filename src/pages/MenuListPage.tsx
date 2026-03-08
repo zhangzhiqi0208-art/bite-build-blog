@@ -159,7 +159,7 @@ const MenuListPage = () => {
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-bold">Night Bistro Menu (66)</h1>
-            <span className="flex items-center gap-1 rounded-full border border-border px-3 py-0.5 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1 rounded-full border border-border px-3 py-0.5 text-xs text-muted-foreground" style={{ backgroundColor: '#FFFADB' }}>
               Affordable certification
             </span>
           </div>
