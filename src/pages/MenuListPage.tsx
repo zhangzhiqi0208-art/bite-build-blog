@@ -464,11 +464,11 @@ const MenuListPage = () => {
                 {/* Items */}
                 <div className="divide-y divide-border">
                   {(categoryItems[selectedCategory] || []).map((item) => (
-                    <div key={item.id}>
+                    <div key={item.id} className={!item.status ? "opacity-40" : ""}>
                       {/* Main item row */}
                       <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-2xl">
+                          <div className={`flex h-12 w-12 items-center justify-center rounded-lg text-2xl ${!item.status ? "bg-secondary grayscale" : "bg-secondary"}`}>
                             {item.image}
                           </div>
                           <div>
@@ -506,8 +506,18 @@ const MenuListPage = () => {
                         <span className="text-right text-sm">{item.deliveryPrice}</span>
                         <span className="text-right text-sm">{item.pickupPrice}</span>
                         <span className="text-right text-sm">{item.stock}</span>
-                        <div className="flex justify-center">
-                          <Switch checked={item.status} />
+                        <div className="flex justify-center" style={{ opacity: !item.status ? 2.5 : 1 }}>
+                          <Switch
+                            checked={item.status}
+                            onCheckedChange={(checked) => {
+                              setCategoryItems(prev => ({
+                                ...prev,
+                                [selectedCategory]: prev[selectedCategory].map(i =>
+                                  i.id === item.id ? { ...i, status: checked } : i
+                                )
+                              }));
+                            }}
+                          />
                         </div>
                         <button className="rounded p-1 hover:bg-secondary">
                           <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
