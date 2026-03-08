@@ -243,38 +243,36 @@ const MenuListPage = () => {
                       : "text-foreground hover:bg-secondary"
                   }`}
                 >
-                  <span className="truncate">{cat.name}</span>
-                  <div className="flex items-center gap-1">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button
-                          onClick={(e) => e.stopPropagation()}
-                          className={`rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity ${
-                            selectedCategory === idx ? "hover:bg-card/20" : "hover:bg-secondary"
-                          }`}
-                        >
-                          <MoreHorizontal className={`h-4 w-4 ${selectedCategory === idx ? "text-card" : "text-muted-foreground"}`} />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-40">
-                        <DropdownMenuItem className="gap-2 cursor-pointer">
-                          <Pencil className="h-4 w-4" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="gap-2 cursor-pointer">
-                          <Clock4 className="h-4 w-4" />
-                          Set pinned time
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive cursor-pointer">
-                          <Trash2 className="h-4 w-4" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    <span className={`text-xs min-w-[1rem] text-right ${selectedCategory === idx ? "text-card/70" : "text-muted-foreground"}`}>
-                      {cat.count}
-                    </span>
-                  </div>
+                  <span className="truncate flex-1">{cat.name}</span>
+                  <span className={`text-xs min-w-[1.5rem] text-right ${selectedCategory === idx ? "text-card/70" : "text-muted-foreground"}`}>
+                    {cat.count}
+                  </span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        onClick={(e) => e.stopPropagation()}
+                        className={`ml-1 rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity ${
+                          selectedCategory === idx ? "hover:bg-card/20" : "hover:bg-secondary"
+                        }`}
+                      >
+                        <MoreHorizontal className={`h-4 w-4 ${selectedCategory === idx ? "text-card" : "text-muted-foreground"}`} />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" side="right" className="w-40">
+                      <DropdownMenuItem className="gap-2 cursor-pointer">
+                        <Pencil className="h-4 w-4" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="gap-2 cursor-pointer">
+                        <Clock4 className="h-4 w-4" />
+                        Set pinned time
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive cursor-pointer">
+                        <Trash2 className="h-4 w-4" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               ))}
             </div>
