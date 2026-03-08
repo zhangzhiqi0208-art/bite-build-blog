@@ -1,12 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "@/components/AdminLayout";
-import { Search, Plus, Settings2, MoreHorizontal, Clock, List } from "lucide-react";
+import { Search, Plus, Settings2, MoreHorizontal, Clock, List, Pencil, Trash2, Clock4 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 interface MenuItem {
   id: string;
   title: string;
