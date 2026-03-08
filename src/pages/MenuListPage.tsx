@@ -321,12 +321,30 @@ const MenuListPage = () => {
             <div className="mb-2 flex items-center justify-between">
               <h2 className="text-sm font-semibold">Category</h2>
               <div className="flex gap-1">
-                <button className="rounded border border-border p-1 hover:bg-secondary">
-                  <List className="h-3.5 w-3.5 text-muted-foreground" />
-                </button>
-                <button className="rounded border border-border p-1 hover:bg-secondary">
-                  <Plus className="h-3.5 w-3.5 text-muted-foreground" />
-                </button>
+                <TooltipProvider delayDuration={300}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button className="rounded border border-border p-1 hover:bg-secondary">
+                        <List className="h-3.5 w-3.5 text-muted-foreground" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top"><p>Sort categories</p></TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider delayDuration={300}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        className="rounded border border-border p-1 hover:bg-secondary"
+                        onClick={() => setAddDialogOpen(true)}
+                      >
+                        <Plus className="h-3.5 w-3.5 text-muted-foreground" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top"><p>Add category</p></TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               </div>
             </div>
             <div className="space-y-0.5">
