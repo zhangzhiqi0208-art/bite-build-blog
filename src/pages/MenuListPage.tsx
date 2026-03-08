@@ -68,7 +68,9 @@ const MenuListPage = () => {
 
   const startEditPrice = (item: MenuItem) => {
     setEditingPriceItemId(item.id);
-    setEditingPriceValue(item.deliveryPrice);
+    // Strip currency prefix for editing
+    const raw = item.deliveryPrice.replace(/^R\$/, "");
+    setEditingPriceValue(raw);
     setEditingPriceError(false);
   };
 
@@ -82,7 +84,7 @@ const MenuListPage = () => {
         const newItems = { ...prev };
         for (const key in newItems) {
           newItems[key] = newItems[key].map(item =>
-            item.id === editingPriceItemId ? { ...item, deliveryPrice: editingPriceValue.trim() } : item
+            item.id === editingPriceItemId ? { ...item, deliveryPrice: `R$${editingPriceValue.trim()}` } : item
           );
         }
         return newItems;
