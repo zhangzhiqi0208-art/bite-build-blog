@@ -284,7 +284,7 @@ const MenuListPage = () => {
                       : "text-foreground hover:bg-secondary"
                   }`}
                 >
-                  <span className="truncate flex-1">{cat.name}</span>
+                  <TruncatedText text={cat.name} className="flex-1" />
                   <span className={`text-xs min-w-[1.5rem] text-right ${selectedCategory === idx ? "text-card/70" : "text-muted-foreground"}`}>
                     {cat.count}
                   </span>
