@@ -376,9 +376,13 @@ const NewItemPage = () => {
                   placeholder="Please enter"
                   value={deliveryPrice}
                   onChange={(e) => setDeliveryPrice(e.target.value)}
+                  className={submitted && !deliveryPrice.trim() ? "border-destructive focus-visible:ring-destructive" : ""}
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">R$</span>
               </div>
+              {submitted && !deliveryPrice.trim() && (
+                <p className="mt-1 text-xs text-destructive">Delivery price is required</p>
+              )}
             </div>
 
             {/* Pick-up & Didi */}
