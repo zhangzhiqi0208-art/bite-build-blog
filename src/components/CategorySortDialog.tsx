@@ -134,7 +134,7 @@ export const CategorySortDialog = ({
           >
             Save
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
