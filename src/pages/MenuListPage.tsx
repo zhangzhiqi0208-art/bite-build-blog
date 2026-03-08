@@ -1,12 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "@/components/AdminLayout";
-import { Search, Plus, Settings2, MoreHorizontal, Clock, List } from "lucide-react";
+import { Search, Plus, Settings2, MoreHorizontal, Clock, List, Pencil, Trash2, Clock4 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 interface MenuItem {
   id: string;
   title: string;
@@ -229,20 +234,48 @@ const MenuListPage = () => {
             </div>
             <div className="space-y-0.5">
               {categories.map((cat, idx) => (
-                <button
+                <div
                   key={idx}
                   onClick={() => setSelectedCategory(idx)}
-                  className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                  className={`group flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors cursor-pointer ${
                     selectedCategory === idx
                       ? "bg-foreground font-semibold text-card"
                       : "text-foreground hover:bg-secondary"
                   }`}
                 >
                   <span className="truncate">{cat.name}</span>
-                  <span className={`text-xs ${selectedCategory === idx ? "text-card/70" : "text-muted-foreground"}`}>
-                    {cat.count}
-                  </span>
-                </button>
+                  <div className="flex items-center gap-1">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          onClick={(e) => e.stopPropagation()}
+                          className={`rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity ${
+                            selectedCategory === idx ? "hover:bg-card/20" : "hover:bg-secondary"
+                          }`}
+                        >
+                          <MoreHorizontal className={`h-4 w-4 ${selectedCategory === idx ? "text-card" : "text-muted-foreground"}`} />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuItem className="gap-2 cursor-pointer">
+                          <Pencil className="h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="gap-2 cursor-pointer">
+                          <Clock4 className="h-4 w-4" />
+                          Set pinned time
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive cursor-pointer">
+                          <Trash2 className="h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <span className={`text-xs min-w-[1rem] text-right ${selectedCategory === idx ? "text-card/70" : "text-muted-foreground"}`}>
+                      {cat.count}
+                    </span>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
