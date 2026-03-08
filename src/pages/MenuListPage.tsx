@@ -68,7 +68,9 @@ const MenuListPage = () => {
 
   const startEditPrice = (item: MenuItem) => {
     setEditingPriceItemId(item.id);
-    setEditingPriceValue(item.deliveryPrice);
+    // Strip currency prefix for editing
+    const raw = item.deliveryPrice.replace(/^R\$/, "");
+    setEditingPriceValue(raw);
     setEditingPriceError(false);
   };
 
