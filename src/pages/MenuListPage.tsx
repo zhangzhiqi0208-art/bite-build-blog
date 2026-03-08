@@ -235,7 +235,6 @@ const MenuListPage = () => {
 
   return (
     <AdminLayout>
-      <>
       <div className="p-6">
         {/* Tabs */}
         <div className="mb-4 flex gap-6 border-b border-border">
