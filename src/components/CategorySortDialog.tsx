@@ -75,9 +75,15 @@ export const CategorySortDialog = ({
         className="sm:max-w-lg flex flex-col p-0"
         style={{ maxHeight: "calc(100vh - 120px)" }}
       >
-        <DialogHeader className="sticky top-0 z-10 bg-background px-6 pt-6 pb-4 border-b border-border">
+        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-border">
           <DialogTitle>Category sorting</DialogTitle>
-        </DialogHeader>
+          <button
+            onClick={() => onOpenChange(false)}
+            className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
 
         <div className="flex-1 overflow-y-auto px-6">
           {items.map((cat, idx) => (
