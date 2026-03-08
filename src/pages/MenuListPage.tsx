@@ -53,6 +53,50 @@ const MenuListPage = () => {
   // Item sort dialog state
   const [itemSortDialogOpen, setItemSortDialogOpen] = useState(false);
 
+  // Inline price editing state
+  const [editingPriceItemId, setEditingPriceItemId] = useState<string | null>(null);
+  const [editingPriceValue, setEditingPriceValue] = useState("");
+  const [editingPriceError, setEditingPriceError] = useState(false);
+  const priceInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editingPriceItemId && priceInputRef.current) {
+      priceInputRef.current.focus();
+      priceInputRef.current.select();
+    }
+  }, [editingPriceItemId]);
+
+  const startEditPrice = (item: MenuItem) => {
+    setEditingPriceItemId(item.id);
+    setEditingPriceValue(item.deliveryPrice);
+    setEditingPriceError(false);
+  };
+
+  const confirmEditPrice = () => {
+    if (!editingPriceValue.trim()) {
+      setEditingPriceError(true);
+      return;
+    }
+    if (editingPriceItemId) {
+      setCategoryItems(prev => {
+        const newItems = { ...prev };
+        for (const key in newItems) {
+          newItems[key] = newItems[key].map(item =>
+            item.id === editingPriceItemId ? { ...item, deliveryPrice: editingPriceValue.trim() } : item
+          );
+        }
+        return newItems;
+      });
+    }
+    cancelEditPrice();
+  };
+
+  const cancelEditPrice = () => {
+    setEditingPriceItemId(null);
+    setEditingPriceValue("");
+    setEditingPriceError(false);
+  };
+
   const toggleExpand = (id: string) => {
     setExpandedItems((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
