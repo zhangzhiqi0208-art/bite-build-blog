@@ -503,9 +503,9 @@ const MenuListPage = () => {
                             )}
                           </div>
                         </div>
-                        <span className="text-right text-sm">{item.deliveryPrice}</span>
-                        <span className="text-right text-sm">{item.pickupPrice}</span>
-                        <span className="text-right text-sm">{item.stock}</span>
+                        <span className={`text-right text-sm ${!item.status ? "text-muted-foreground/50" : ""}`}>{item.deliveryPrice}</span>
+                        <span className={`text-right text-sm ${!item.status ? "text-muted-foreground/50" : ""}`}>{item.pickupPrice}</span>
+                        <span className={`text-right text-sm ${!item.status ? "text-muted-foreground/50" : ""}`}>{item.stock}</span>
                         <div className="flex justify-center" style={{ opacity: !item.status ? 2.5 : 1 }}>
                           <Switch
                             checked={item.status}
