@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import AdminLayout from "@/components/AdminLayout";
 import { ArrowLeft, ImagePlus, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -10,25 +10,113 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useMenu } from "@/contexts/MenuContext";
+import { toast } from "@/hooks/use-toast";
 
 const allergens = ["Diary", "Eggs", "Fish", "Diary", "Eggs", "Fish", "Diary", "Eggs", "Fish", "Diary", "Eggs", "Fish"];
 
 const NewItemPage = () => {
   const navigate = useNavigate();
+  const { itemId } = useParams<{ itemId?: string }>();
+  const { categories, addItem, updateItem, getItemById } = useMenu();
+
+  const isEdit = !!itemId;
+  const existingData = isEdit ? getItemById(itemId) : null;
+
   const [itemType, setItemType] = useState<"items" | "combo">("items");
+  const [itemName, setItemName] = useState("");
+  const [pdvCode, setPdvCode] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedCategoryIdx, setSelectedCategoryIdx] = useState<string>("");
   const [deliveryEnabled, setDeliveryEnabled] = useState(true);
+  const [deliveryPrice, setDeliveryPrice] = useState("");
   const [pickupEnabled, setPickupEnabled] = useState(false);
+  const [pickupPrice, setPickupPrice] = useState("");
   const [didiEnabled, setDidiEnabled] = useState(false);
   const [stockType, setStockType] = useState("unlimited");
+  const [stockCount, setStockCount] = useState("");
   const [canSoldSeparately, setCanSoldSeparately] = useState("yes");
   const [containsAlcohol, setContainsAlcohol] = useState("no");
   const [saleTimeType, setSaleTimeType] = useState("weekly");
-  const [selectedAllergens, setSelectedAllergens] = useState<number[]>([0, 1, 2, 3, 4, 5]);
+  const [selectedAllergens, setSelectedAllergens] = useState<number[]>([]);
+
+  // Load existing data for edit mode
+  useEffect(() => {
+    if (existingData) {
+      const { item, categoryIndex } = existingData;
+      setItemType(item.itemType || "items");
+      setItemName(item.title);
+      setPdvCode(item.pdvCode || "");
+      setDescription(item.description || "");
+      setSelectedCategoryIdx(String(categoryIndex));
+      setDeliveryEnabled(true);
+      setDeliveryPrice(item.deliveryPrice.replace("R$", ""));
+      setPickupPrice(item.pickupPrice.replace("R$", ""));
+      setPickupEnabled(item.pickupPrice !== "");
+      setStockType(item.stock === "Unlimited" ? "unlimited" : "custom");
+      setStockCount(item.stock === "Unlimited" ? "" : item.stock);
+      setCanSoldSeparately(item.notSoldIndependently ? "no" : "yes");
+    }
+  }, [itemId]);
 
   const toggleAllergen = (idx: number) => {
     setSelectedAllergens((prev) =>
       prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
     );
+  };
+
+  const handleSubmit = () => {
+    if (!itemName.trim()) {
+      toast({ title: "Item Name is required", variant: "destructive" });
+      return;
+    }
+    if (!selectedCategoryIdx) {
+      toast({ title: "Category is required", variant: "destructive" });
+      return;
+    }
+    if (!deliveryPrice.trim()) {
+      toast({ title: "Delivery price is required", variant: "destructive" });
+      return;
+    }
+
+    const catIdx = Number(selectedCategoryIdx);
+    const formattedDeliveryPrice = `R$${deliveryPrice}`;
+    const formattedPickupPrice = pickupEnabled && pickupPrice ? `R$${pickupPrice}` : formattedDeliveryPrice;
+    const stockValue = stockType === "unlimited" ? "Unlimited" : (stockCount || "0");
+
+    if (isEdit && existingData) {
+      updateItem(itemId, {
+        title: itemName.trim(),
+        itemType,
+        pdvCode,
+        description,
+        deliveryPrice: formattedDeliveryPrice,
+        pickupPrice: formattedPickupPrice,
+        stock: stockValue,
+        notSoldIndependently: canSoldSeparately === "no",
+      });
+      toast({ title: "Item updated successfully" });
+    } else {
+      const newId = `${catIdx}-${Date.now()}`;
+      const newItem = {
+        id: newId,
+        title: itemName.trim(),
+        image: itemType === "combo" ? "🍱" : "🍽️",
+        tags: [],
+        deliveryPrice: formattedDeliveryPrice,
+        pickupPrice: formattedPickupPrice,
+        stock: stockValue,
+        status: true,
+        addOns: [],
+        itemType,
+        pdvCode,
+        description,
+        notSoldIndependently: canSoldSeparately === "no",
+      };
+      addItem(catIdx, newItem);
+      toast({ title: "Item created successfully" });
+    }
+    navigate("/");
   };
 
   return (
@@ -38,10 +126,10 @@ const NewItemPage = () => {
         <div className="mb-4 flex items-center gap-3">
           <button onClick={() => navigate("/")} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" />
-            返回
+            Back
           </button>
           <span className="text-muted-foreground">|</span>
-          <span className="text-sm font-medium">New Item</span>
+          <span className="text-sm font-medium">{isEdit ? "Edit Item" : "New Item"}</span>
         </div>
 
         {/* Tabs */}
@@ -55,7 +143,7 @@ const NewItemPage = () => {
           {/* Item Type */}
           <div>
             <label className="mb-2 block text-sm font-medium">
-              菜品类型 <span className="text-destructive">*</span>
+              Item Type <span className="text-destructive">*</span>
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -99,8 +187,13 @@ const NewItemPage = () => {
               Item Name <span className="text-destructive">*</span>
             </label>
             <div className="relative">
-              <Input placeholder="Please enter" maxLength={50} />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">0/50</span>
+              <Input
+                placeholder="Please enter"
+                maxLength={50}
+                value={itemName}
+                onChange={(e) => setItemName(e.target.value)}
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{itemName.length}/50</span>
             </div>
           </div>
 
@@ -108,8 +201,13 @@ const NewItemPage = () => {
           <div>
             <label className="mb-1 block text-sm font-medium">PDV Code</label>
             <div className="relative">
-              <Input placeholder="Please enter" maxLength={50} />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">0/50</span>
+              <Input
+                placeholder="Please enter"
+                maxLength={50}
+                value={pdvCode}
+                onChange={(e) => setPdvCode(e.target.value)}
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{pdvCode.length}/50</span>
             </div>
           </div>
 
@@ -141,6 +239,8 @@ const NewItemPage = () => {
             <Textarea
               placeholder="Please enter details like ingredients, weight, portion size etc"
               rows={4}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             />
           </div>
 
@@ -149,14 +249,14 @@ const NewItemPage = () => {
             <label className="mb-1 block text-sm font-medium">
               Store-defined Category <span className="text-destructive">*</span> ℹ
             </label>
-            <Select>
+            <Select value={selectedCategoryIdx} onValueChange={setSelectedCategoryIdx}>
               <SelectTrigger>
                 <SelectValue placeholder="Please select" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="burgers">Burgers</SelectItem>
-                <SelectItem value="combos">Combos</SelectItem>
-                <SelectItem value="sides">Sides</SelectItem>
+                {categories.map((cat, idx) => (
+                  <SelectItem key={idx} value={String(idx)}>{cat.name}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -258,8 +358,8 @@ const NewItemPage = () => {
             <label className="mb-1 block text-sm font-medium">
               Price <span className="text-destructive">*</span>
             </label>
-            <p className="mb-3 text-xs text-info">
-              ● 自提与DiDi Your Business渠道的定价需低于外卖价格(PM提供文案)
+            <p className="mb-3 text-xs text-muted-foreground">
+              ● Pick-up and DiDi Your Business channel pricing must be lower than delivery price
             </p>
 
             {/* Delivery Price */}
@@ -272,7 +372,11 @@ const NewItemPage = () => {
                 <Switch checked={deliveryEnabled} onCheckedChange={setDeliveryEnabled} />
               </div>
               <div className="relative">
-                <Input placeholder="Please enter" />
+                <Input
+                  placeholder="Please enter"
+                  value={deliveryPrice}
+                  onChange={(e) => setDeliveryPrice(e.target.value)}
+                />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">R$</span>
               </div>
             </div>
@@ -288,7 +392,12 @@ const NewItemPage = () => {
                   <Switch checked={pickupEnabled} onCheckedChange={setPickupEnabled} />
                 </div>
                 <div className="relative">
-                  <Input placeholder="Please enter" disabled={!pickupEnabled} />
+                  <Input
+                    placeholder="Please enter"
+                    disabled={!pickupEnabled}
+                    value={pickupPrice}
+                    onChange={(e) => setPickupPrice(e.target.value)}
+                  />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">R$</span>
                 </div>
               </div>
@@ -318,11 +427,17 @@ const NewItemPage = () => {
               </div>
               <div className="flex items-center gap-2">
                 <RadioGroupItem value="custom" id="stock-custom" />
-                <Label htmlFor="stock-custom">自定义</Label>
+                <Label htmlFor="stock-custom">Custom</Label>
               </div>
             </RadioGroup>
             {stockType === "custom" && (
-              <Input className="mt-2 w-32" placeholder="Number" type="number" />
+              <Input
+                className="mt-2 w-32"
+                placeholder="Number"
+                type="number"
+                value={stockCount}
+                onChange={(e) => setStockCount(e.target.value)}
+              />
             )}
           </div>
 
@@ -343,7 +458,7 @@ const NewItemPage = () => {
 
           {/* Sale Time */}
           <div>
-            <label className="mb-2 block text-sm font-medium">售卖时段</label>
+            <label className="mb-2 block text-sm font-medium">Sale Time</label>
             <RadioGroup value={saleTimeType} onValueChange={setSaleTimeType} className="flex gap-6">
               <div className="flex items-center gap-2">
                 <RadioGroupItem value="weekly" id="time-weekly" />
@@ -361,8 +476,11 @@ const NewItemPage = () => {
             <Button variant="outline" onClick={() => navigate("/")}>
               Discard
             </Button>
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-              Submit
+            <Button
+              onClick={handleSubmit}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              {isEdit ? "Save" : "Submit"}
             </Button>
           </div>
         </div>
