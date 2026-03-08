@@ -370,21 +370,21 @@ const MenuListPage = () => {
                 <div
                   key={idx}
                   onClick={() => setSelectedCategory(idx)}
-                  className={`group flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors cursor-pointer ${
+                  className={`group relative flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors cursor-pointer ${
                     selectedCategory === idx
                       ? "bg-foreground font-semibold text-card"
                       : "text-foreground hover:bg-secondary"
                   }`}
                 >
                   <TruncatedText text={cat.name} className="flex-1" />
-                  <span className={`text-xs min-w-[1.5rem] text-right ${selectedCategory === idx ? "text-card/70" : "text-muted-foreground"}`}>
+                  <span className={`text-xs min-w-[1.5rem] text-right transition-transform group-hover:-translate-x-6 ${selectedCategory === idx ? "text-card/70" : "text-muted-foreground"}`}>
                     {cat.count}
                   </span>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
                         onClick={(e) => e.stopPropagation()}
-                        className={`ml-1 rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity ${
+                        className={`absolute right-2 rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity ${
                           selectedCategory === idx ? "hover:bg-card/20" : "hover:bg-secondary"
                         }`}
                       >
