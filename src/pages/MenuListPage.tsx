@@ -134,14 +134,47 @@ const sampleItems: MenuItem[] = [
 
 const MenuListPage = () => {
   const navigate = useNavigate();
+  const [categories, setCategories] = useState(initialCategories);
   const [selectedCategory, setSelectedCategory] = useState(1);
   const [expandedItems, setExpandedItems] = useState<string[]>(["2"]);
+  
+  // Edit category dialog state
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingCategoryIndex, setEditingCategoryIndex] = useState<number | null>(null);
+  const [editCategoryName, setEditCategoryName] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const toggleExpand = (id: string) => {
     setExpandedItems((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
+
+  const handleEditCategory = (idx: number) => {
+    setEditingCategoryIndex(idx);
+    setEditCategoryName(categories[idx].name);
+    setEditDialogOpen(true);
+  };
+
+  const handleSaveCategory = () => {
+    if (editCategoryName.trim() === "" || editingCategoryIndex === null) return;
+    
+    setCategories(prev => prev.map((cat, idx) => 
+      idx === editingCategoryIndex 
+        ? { ...cat, name: editCategoryName.trim() }
+        : cat
+    ));
+    setEditDialogOpen(false);
+    setEditingCategoryIndex(null);
+    setEditCategoryName("");
+  };
+
+  useEffect(() => {
+    if (editDialogOpen && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editDialogOpen]);
 
   return (
     <AdminLayout>
