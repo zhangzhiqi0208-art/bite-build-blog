@@ -117,32 +117,40 @@ const NewItemPage = () => {
   const basicInfoRef = useRef<HTMLDivElement>(null);
   const modificationsRef = useRef<HTMLDivElement>(null);
   const salesInfoRef = useRef<HTMLDivElement>(null);
+  const isScrollingRef = useRef(false);
 
   const scrollToSection = (section: "basic" | "modifications" | "sales") => {
     setActiveTab(section);
+    isScrollingRef.current = true;
     const refMap = { basic: basicInfoRef, modifications: modificationsRef, sales: salesInfoRef };
     const target = refMap[section].current;
     const container = scrollContainerRef.current?.closest("main");
     if (target && container) {
-      const headerHeight = 110; // sticky header height + padding
-      const targetTop = target.offsetTop;
+      const containerRect = container.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      const offset = targetRect.top - containerRect.top + container.scrollTop - 110;
       container.scrollTo({
-        top: targetTop - headerHeight,
+        top: offset,
         behavior: "smooth",
       });
+      // Release scroll lock after animation
+      setTimeout(() => { isScrollingRef.current = false; }, 600);
+    } else {
+      isScrollingRef.current = false;
     }
   };
 
   const handleScroll = useCallback(() => {
+    if (isScrollingRef.current) return;
     const container = scrollContainerRef.current?.closest("main");
     if (!container) return;
-    const scrollTop = container.scrollTop;
-    const headerHeight = 100;
-    const salesTop = salesInfoRef.current?.offsetTop ?? Infinity;
-    const modsTop = modificationsRef.current?.offsetTop ?? Infinity;
-    if (scrollTop + headerHeight >= salesTop) {
+    const containerRect = container.getBoundingClientRect();
+    const threshold = containerRect.top + 120;
+    const salesTop = salesInfoRef.current?.getBoundingClientRect().top ?? Infinity;
+    const modsTop = modificationsRef.current?.getBoundingClientRect().top ?? Infinity;
+    if (salesTop <= threshold) {
       setActiveTab("sales");
-    } else if (scrollTop + headerHeight >= modsTop) {
+    } else if (modsTop <= threshold) {
       setActiveTab("modifications");
     } else {
       setActiveTab("basic");
