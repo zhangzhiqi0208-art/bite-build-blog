@@ -639,6 +639,13 @@ const MenuListPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <CategorySortDialog
+        open={sortDialogOpen}
+        onOpenChange={setSortDialogOpen}
+        categories={categories}
+        onSave={handleSortSave}
+      />
       </div>
     </AdminLayout>
   );
