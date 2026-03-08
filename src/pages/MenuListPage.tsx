@@ -345,7 +345,6 @@ const MenuListPage = () => {
                   </Tooltip>
                 </TooltipProvider>
               </div>
-              </div>
             </div>
             <div className="space-y-0.5">
               {categories.map((cat, idx) => (
