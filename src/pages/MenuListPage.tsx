@@ -692,6 +692,14 @@ const MenuListPage = () => {
         categories={categories}
         onSave={handleSortSave}
       />
+
+      <ItemSortDialog
+        open={itemSortDialogOpen}
+        onOpenChange={setItemSortDialogOpen}
+        categoryName={categories[selectedCategory]?.name || ""}
+        items={(categoryItems[selectedCategory] || []).map(i => ({ id: i.id, title: i.title, image: i.image }))}
+        onSave={handleItemSortSave}
+      />
       </div>
     </AdminLayout>
   );
