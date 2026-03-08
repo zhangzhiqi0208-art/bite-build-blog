@@ -29,6 +29,9 @@ interface MenuItem {
   image: string;
   tags: string[];
   availability?: string;
+  notSoldIndependently?: boolean;
+  reviewStatus?: "under_review";
+  marketingActivity?: boolean;
   deliveryPrice: string;
   pickupPrice: string;
   stock: string;
