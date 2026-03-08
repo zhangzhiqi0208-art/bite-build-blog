@@ -19,11 +19,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
 import { TruncatedText } from "@/components/TruncatedText";
 interface MenuItem {
   id: string;
