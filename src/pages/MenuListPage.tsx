@@ -57,7 +57,9 @@ const MenuListPage = () => {
   const [editingPriceItemId, setEditingPriceItemId] = useState<string | null>(null);
   const [editingPriceValue, setEditingPriceValue] = useState("");
   const [editingPriceError, setEditingPriceError] = useState(false);
+  const [editingPriceWarning, setEditingPriceWarning] = useState(false);
   const priceInputRef = useRef<HTMLInputElement>(null);
+  const priceEditContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (editingPriceItemId && priceInputRef.current) {
@@ -66,17 +68,30 @@ const MenuListPage = () => {
     }
   }, [editingPriceItemId]);
 
+  // Click outside handler: show warning instead of closing
+  useEffect(() => {
+    if (!editingPriceItemId) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (priceEditContainerRef.current && !priceEditContainerRef.current.contains(e.target as Node)) {
+        setEditingPriceWarning(true);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [editingPriceItemId]);
+
   const startEditPrice = (item: MenuItem) => {
     setEditingPriceItemId(item.id);
-    // Strip currency prefix for editing
     const raw = item.deliveryPrice.replace(/^R\$/, "");
     setEditingPriceValue(raw);
     setEditingPriceError(false);
+    setEditingPriceWarning(false);
   };
 
   const confirmEditPrice = () => {
     if (!editingPriceValue.trim()) {
       setEditingPriceError(true);
+      setEditingPriceWarning(false);
       return;
     }
     if (editingPriceItemId) {
@@ -97,6 +112,7 @@ const MenuListPage = () => {
     setEditingPriceItemId(null);
     setEditingPriceValue("");
     setEditingPriceError(false);
+    setEditingPriceWarning(false);
   };
 
   const toggleExpand = (id: string) => {
