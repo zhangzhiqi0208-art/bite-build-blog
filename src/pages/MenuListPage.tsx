@@ -623,6 +623,7 @@ const MenuListPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </>
     </AdminLayout>
   );
 };
