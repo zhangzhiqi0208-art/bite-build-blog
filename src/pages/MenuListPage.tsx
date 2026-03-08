@@ -340,7 +340,10 @@ const MenuListPage = () => {
                 <TooltipProvider delayDuration={300}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <button className="rounded border border-border p-1 hover:bg-secondary">
+                      <button
+                        className="rounded border border-border p-1 hover:bg-secondary"
+                        onClick={() => setSortDialogOpen(true)}
+                      >
                         <List className="h-3.5 w-3.5 text-muted-foreground" />
                       </button>
                     </TooltipTrigger>
