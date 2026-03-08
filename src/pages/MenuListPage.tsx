@@ -160,6 +160,9 @@ const MenuListPage = () => {
   const [newCategoryName, setNewCategoryName] = useState("");
   const addInputRef = useRef<HTMLInputElement>(null);
 
+  // Sort category dialog state
+  const [sortDialogOpen, setSortDialogOpen] = useState(false);
+
   const toggleExpand = (id: string) => {
     setExpandedItems((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
