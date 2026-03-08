@@ -104,7 +104,12 @@ export const CategorySortDialog = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handlePinToTop(idx)}
-                  className="rounded p-1 hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                  disabled={idx === 0}
+                  className={`rounded p-1 transition-colors ${
+                    idx === 0
+                      ? "text-muted-foreground/30 cursor-not-allowed"
+                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  }`}
                   title="Pin to top"
                 >
                   <ArrowUpToLine className="h-4 w-4" />
