@@ -238,6 +238,12 @@ const MenuListPage = () => {
     setSelectedCategory(0);
   };
 
+  const handleItemSortSave = (reordered: { id: string; title: string; image: string }[]) => {
+    const currentItems = categoryItems[selectedCategory] || [];
+    const newItems = reordered.map(r => currentItems.find(i => i.id === r.id)!).filter(Boolean);
+    setCategoryItems(prev => ({ ...prev, [selectedCategory]: newItems }));
+  };
+
   useEffect(() => {
     if (addDialogOpen && addInputRef.current) {
       addInputRef.current.focus();
