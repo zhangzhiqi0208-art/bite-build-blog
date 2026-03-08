@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { TruncatedText } from "@/components/TruncatedText";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { CategorySortDialog } from "@/components/CategorySortDialog";
 interface MenuItem {
   id: string;
   title: string;
@@ -159,6 +160,9 @@ const MenuListPage = () => {
   const [newCategoryName, setNewCategoryName] = useState("");
   const addInputRef = useRef<HTMLInputElement>(null);
 
+  // Sort category dialog state
+  const [sortDialogOpen, setSortDialogOpen] = useState(false);
+
   const toggleExpand = (id: string) => {
     setExpandedItems((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
@@ -218,6 +222,17 @@ const MenuListPage = () => {
     setSelectedCategory(newIdx);
     setAddDialogOpen(false);
     setNewCategoryName("");
+  };
+
+  const handleSortSave = (reordered: { name: string; count: number }[]) => {
+    const oldIndexMap = reordered.map(r => categories.findIndex(c => c.name === r.name));
+    const newCategoryItemsMap: Record<number, MenuItem[]> = {};
+    oldIndexMap.forEach((oldIdx, newIdx) => {
+      newCategoryItemsMap[newIdx] = categoryItems[oldIdx] || [];
+    });
+    setCategories(reordered);
+    setCategoryItems(newCategoryItemsMap);
+    setSelectedCategory(0);
   };
 
   useEffect(() => {
@@ -325,7 +340,10 @@ const MenuListPage = () => {
                 <TooltipProvider delayDuration={300}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <button className="rounded border border-border p-1 hover:bg-secondary">
+                      <button
+                        className="rounded border border-border p-1 hover:bg-secondary"
+                        onClick={() => setSortDialogOpen(true)}
+                      >
                         <List className="h-3.5 w-3.5 text-muted-foreground" />
                       </button>
                     </TooltipTrigger>
@@ -621,6 +639,13 @@ const MenuListPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <CategorySortDialog
+        open={sortDialogOpen}
+        onOpenChange={setSortDialogOpen}
+        categories={categories}
+        onSave={handleSortSave}
+      />
       </div>
     </AdminLayout>
   );
