@@ -122,31 +122,39 @@ const NewItemPage = () => {
     setActiveTab(section);
     const refMap = { basic: basicInfoRef, modifications: modificationsRef, sales: salesInfoRef };
     const target = refMap[section].current;
-    if (target && scrollContainerRef.current) {
-      const containerTop = scrollContainerRef.current.getBoundingClientRect().top;
-      const targetTop = target.getBoundingClientRect().top;
-      scrollContainerRef.current.scrollTo({
-        top: scrollContainerRef.current.scrollTop + (targetTop - containerTop),
+    const container = scrollContainerRef.current?.closest("main");
+    if (target && container) {
+      const headerHeight = 90; // sticky header height approx
+      const targetTop = target.offsetTop;
+      container.scrollTo({
+        top: targetTop - headerHeight,
         behavior: "smooth",
       });
     }
   };
 
   const handleScroll = useCallback(() => {
-    const container = scrollContainerRef.current;
+    const container = scrollContainerRef.current?.closest("main");
     if (!container) return;
-    const containerTop = container.getBoundingClientRect().top;
-    const threshold = containerTop + 40;
-    const salesTop = salesInfoRef.current?.getBoundingClientRect().top ?? Infinity;
-    const modsTop = modificationsRef.current?.getBoundingClientRect().top ?? Infinity;
-    if (salesTop <= threshold) {
+    const scrollTop = container.scrollTop;
+    const headerHeight = 100;
+    const salesTop = salesInfoRef.current?.offsetTop ?? Infinity;
+    const modsTop = modificationsRef.current?.offsetTop ?? Infinity;
+    if (scrollTop + headerHeight >= salesTop) {
       setActiveTab("sales");
-    } else if (modsTop <= threshold) {
+    } else if (scrollTop + headerHeight >= modsTop) {
       setActiveTab("modifications");
     } else {
       setActiveTab("basic");
     }
   }, []);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current?.closest("main");
+    if (!container) return;
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   return (
     <AdminLayout>
