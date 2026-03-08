@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { TruncatedText } from "@/components/TruncatedText";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { CategorySortDialog } from "@/components/CategorySortDialog";
 interface MenuItem {
   id: string;
   title: string;
