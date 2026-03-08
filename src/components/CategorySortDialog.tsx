@@ -124,7 +124,7 @@ export const CategorySortDialog = ({
           ))}
         </div>
 
-        <DialogFooter className="sticky bottom-0 z-10 bg-background px-6 py-4 border-t border-border gap-2 sm:gap-0">
+        <div className="flex justify-end gap-2 px-6 py-4 border-t border-border">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
