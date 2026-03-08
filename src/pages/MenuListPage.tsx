@@ -348,7 +348,13 @@ const MenuListPage = () => {
                         <Clock4 className="h-4 w-4" />
                         Set pinned time
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive cursor-pointer">
+                      <DropdownMenuItem
+                        className="gap-2 text-destructive focus:text-destructive cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteCategory(idx);
+                        }}
+                      >
                         <Trash2 className="h-4 w-4" />
                         Delete
                       </DropdownMenuItem>
