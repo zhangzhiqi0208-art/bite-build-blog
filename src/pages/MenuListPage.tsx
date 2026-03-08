@@ -23,6 +23,7 @@ import {
 import { TruncatedText } from "@/components/TruncatedText";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { CategorySortDialog } from "@/components/CategorySortDialog";
+import { ItemSortDialog } from "@/components/ItemSortDialog";
 interface MenuItem {
   id: string;
   title: string;
@@ -162,6 +163,9 @@ const MenuListPage = () => {
   // Sort category dialog state
   const [sortDialogOpen, setSortDialogOpen] = useState(false);
 
+  // Item sort dialog state
+  const [itemSortDialogOpen, setItemSortDialogOpen] = useState(false);
+
   const toggleExpand = (id: string) => {
     setExpandedItems((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
@@ -232,6 +236,12 @@ const MenuListPage = () => {
     setCategories(reordered);
     setCategoryItems(newCategoryItemsMap);
     setSelectedCategory(0);
+  };
+
+  const handleItemSortSave = (reordered: { id: string; title: string; image: string }[]) => {
+    const currentItems = categoryItems[selectedCategory] || [];
+    const newItems = reordered.map(r => currentItems.find(i => i.id === r.id)!).filter(Boolean);
+    setCategoryItems(prev => ({ ...prev, [selectedCategory]: newItems }));
   };
 
   useEffect(() => {
@@ -431,7 +441,10 @@ const MenuListPage = () => {
                   {categories[selectedCategory].count} items
                 </span>
               </h2>
-              <button className="rounded border border-border p-1 hover:bg-secondary">
+              <button
+                onClick={() => setItemSortDialogOpen(true)}
+                className="rounded border border-border p-1 hover:bg-secondary"
+              >
                 <List className="h-3.5 w-3.5 text-muted-foreground" />
               </button>
             </div>
@@ -678,6 +691,14 @@ const MenuListPage = () => {
         onOpenChange={setSortDialogOpen}
         categories={categories}
         onSave={handleSortSave}
+      />
+
+      <ItemSortDialog
+        open={itemSortDialogOpen}
+        onOpenChange={setItemSortDialogOpen}
+        categoryName={categories[selectedCategory]?.name || ""}
+        items={(categoryItems[selectedCategory] || []).map(i => ({ id: i.id, title: i.title, image: i.image }))}
+        onSave={handleItemSortSave}
       />
       </div>
     </AdminLayout>
