@@ -395,6 +395,10 @@ const NewItemPage = () => {
             </RadioGroup>
           </div>
 
+          </div>{/* end basic info section */}
+
+          {/* === MODIFICATIONS SECTION === */}
+          <div ref={modificationsRef}>
           {/* Modification Group */}
           <div>
             <label className="mb-2 block text-sm font-medium">Modification group</label>
