@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminLayout from "@/components/AdminLayout";
-import { ArrowLeft, ImagePlus, Plus } from "lucide-react";
+import { ArrowLeft, ImagePlus, Plus, X } from "lucide-react";
+import ImageUploadDialog from "@/components/ImageUploadDialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
