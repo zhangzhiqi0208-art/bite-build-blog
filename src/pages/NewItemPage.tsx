@@ -41,6 +41,8 @@ const NewItemPage = () => {
   const [saleTimeType, setSaleTimeType] = useState("weekly");
   const [selectedAllergens, setSelectedAllergens] = useState<number[]>([]);
   const [submitted, setSubmitted] = useState(false);
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
 
   // Load existing data for edit mode
   useEffect(() => {
