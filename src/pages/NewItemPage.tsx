@@ -288,15 +288,35 @@ const NewItemPage = () => {
               File requirements: JPG, PNG, GIF, or WEBP, with a size not exceeding 10MB. Minimum pixel requirement: 490 pixels in width and height.
             </p>
             <div className="flex items-start gap-4">
-              <div className="flex h-28 w-28 flex-col items-center justify-center rounded-lg border-2 border-dashed border-border bg-secondary">
-                <ImagePlus className="mb-1 h-8 w-8 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground">Add Image</span>
-              </div>
+              {uploadedImage ? (
+                <div className="relative h-28 w-28 rounded-lg overflow-hidden border border-border">
+                  <img src={uploadedImage} alt="Item" className="h-full w-full object-cover" />
+                  <button
+                    onClick={() => setUploadedImage(null)}
+                    className="absolute top-1 right-1 h-5 w-5 rounded-full bg-foreground/70 flex items-center justify-center hover:bg-foreground/90"
+                  >
+                    <X className="h-3 w-3 text-background" />
+                  </button>
+                </div>
+              ) : (
+                <div
+                  onClick={() => setImageDialogOpen(true)}
+                  className="flex h-28 w-28 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border bg-secondary hover:border-muted-foreground transition-colors"
+                >
+                  <ImagePlus className="mb-1 h-8 w-8 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">Add Image</span>
+                </div>
+              )}
               <div className="flex gap-2">
-                <Button variant="outline" size="sm">Upload</Button>
-                <Button variant="outline" size="sm" className="text-muted-foreground">Delete</Button>
+                <Button variant="outline" size="sm" onClick={() => setImageDialogOpen(true)}>Upload</Button>
+                <Button variant="outline" size="sm" className="text-muted-foreground" onClick={() => setUploadedImage(null)}>Delete</Button>
               </div>
             </div>
+            <ImageUploadDialog
+              open={imageDialogOpen}
+              onOpenChange={setImageDialogOpen}
+              onImageSelected={(_file, previewUrl) => setUploadedImage(previewUrl)}
+            />
           </div>
 
           {/* Description */}
