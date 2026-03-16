@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AdminLayout from "@/components/AdminLayout";
 import emptyMenuImage from "@/assets/empty-menu.png";
 import { Search, Plus, Settings2, MoreHorizontal, Clock, List, Pencil, Trash2, Clock4, AlertCircle, Hourglass, Megaphone, Lock, Check, X } from "lucide-react";
@@ -28,32 +29,26 @@ import { useMenu, type MenuItem, type AddOnGroup } from "@/contexts/MenuContext"
 
 const MenuListPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { categories, setCategories, categoryItems, setCategoryItems } = useMenu();
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   
-  // Edit category dialog state
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingCategoryIndex, setEditingCategoryIndex] = useState<number | null>(null);
   const [editCategoryName, setEditCategoryName] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Delete category dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingCategoryIndex, setDeletingCategoryIndex] = useState<number | null>(null);
 
-  // Add category dialog state
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const addInputRef = useRef<HTMLInputElement>(null);
 
-  // Sort category dialog state
   const [sortDialogOpen, setSortDialogOpen] = useState(false);
-
-  // Item sort dialog state
   const [itemSortDialogOpen, setItemSortDialogOpen] = useState(false);
 
-  // Inline price editing state
   const [editingPriceItemId, setEditingPriceItemId] = useState<string | null>(null);
   const [editingPriceValue, setEditingPriceValue] = useState("");
   const [editingPriceError, setEditingPriceError] = useState(false);
@@ -68,7 +63,6 @@ const MenuListPage = () => {
     }
   }, [editingPriceItemId]);
 
-  // Click outside handler: show warning instead of closing
   useEffect(() => {
     if (!editingPriceItemId) return;
     const handleClickOutside = (e: MouseEvent) => {
@@ -129,11 +123,8 @@ const MenuListPage = () => {
 
   const handleSaveCategory = () => {
     if (editCategoryName.trim() === "" || editingCategoryIndex === null) return;
-    
     setCategories(prev => prev.map((cat, idx) => 
-      idx === editingCategoryIndex 
-        ? { ...cat, name: editCategoryName.trim() }
-        : cat
+      idx === editingCategoryIndex ? { ...cat, name: editCategoryName.trim() } : cat
     ));
     setEditDialogOpen(false);
     setEditingCategoryIndex(null);
@@ -151,7 +142,6 @@ const MenuListPage = () => {
     setCategoryItems(prev => {
       const newItems = { ...prev };
       delete newItems[deletingCategoryIndex];
-      // Re-index remaining items
       const reindexed: Record<number, MenuItem[]> = {};
       const remaining = Object.entries(newItems)
         .sort(([a], [b]) => Number(a) - Number(b))
@@ -194,47 +184,35 @@ const MenuListPage = () => {
   };
 
   useEffect(() => {
-    if (addDialogOpen && addInputRef.current) {
-      addInputRef.current.focus();
-    }
+    if (addDialogOpen && addInputRef.current) addInputRef.current.focus();
   }, [addDialogOpen]);
 
   useEffect(() => {
-    if (editDialogOpen && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
-    }
+    if (editDialogOpen && inputRef.current) { inputRef.current.focus(); inputRef.current.select(); }
   }, [editDialogOpen]);
 
   return (
     <AdminLayout>
       <div className="p-6">
-
         {/* Tabs */}
         <div className="mb-4 flex gap-6 border-b border-border">
-          <button className="border-b-2 border-foreground pb-2 text-sm font-semibold">Store Menu</button>
-          <button className="pb-2 text-sm text-muted-foreground hover:text-foreground">Items</button>
-          <button className="pb-2 text-sm text-muted-foreground hover:text-foreground">Modifications</button>
+          <button className="border-b-2 border-foreground pb-2 text-sm font-semibold">{t("menuList.storeMenu")}</button>
+          <button className="pb-2 text-sm text-muted-foreground hover:text-foreground">{t("menuList.items")}</button>
+          <button className="pb-2 text-sm text-muted-foreground hover:text-foreground">{t("menuList.modifications")}</button>
         </div>
 
         {/* Menu Title */}
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold">Night Bistro Menu (66)</h1>
+            <h1 className="text-xl font-bold">{t("menuList.nightBistroMenu")} (66)</h1>
             <span className="flex items-center gap-1 rounded-full border border-border px-3 py-0.5 text-xs text-muted-foreground" style={{ backgroundColor: '#FFFADB' }}>
-              Affordable certification
+              {t("menuList.affordableCert")}
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <button className="rounded-lg border border-border p-2 hover:bg-secondary">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </button>
-            <button className="rounded-lg border border-border p-2 hover:bg-secondary">
-              <List className="h-4 w-4 text-muted-foreground" />
-            </button>
-            <button className="rounded-lg border border-border p-2 hover:bg-secondary">
-              <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-            </button>
+            <button className="rounded-lg border border-border p-2 hover:bg-secondary"><Clock className="h-4 w-4 text-muted-foreground" /></button>
+            <button className="rounded-lg border border-border p-2 hover:bg-secondary"><List className="h-4 w-4 text-muted-foreground" /></button>
+            <button className="rounded-lg border border-border p-2 hover:bg-secondary"><MoreHorizontal className="h-4 w-4 text-muted-foreground" /></button>
           </div>
         </div>
 
@@ -243,47 +221,32 @@ const MenuListPage = () => {
           <div className="flex items-center gap-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input placeholder="Search" className="h-9 w-48 pl-9" />
+              <Input placeholder={t("menuList.search")} className="h-9 w-48 pl-9" />
             </div>
             <Select>
-              <SelectTrigger className="h-9 w-36">
-                <SelectValue placeholder="Item Status" />
-              </SelectTrigger>
+              <SelectTrigger className="h-9 w-36"><SelectValue placeholder={t("menuList.itemStatus")} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="all">{t("menuList.all")}</SelectItem>
+                <SelectItem value="active">{t("menuList.active")}</SelectItem>
+                <SelectItem value="inactive">{t("menuList.inactive")}</SelectItem>
               </SelectContent>
             </Select>
             <Select>
-              <SelectTrigger className="h-9 w-36">
-                <SelectValue placeholder="Sale Status" />
-              </SelectTrigger>
+              <SelectTrigger className="h-9 w-36"><SelectValue placeholder={t("menuList.saleStatus")} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="on-sale">On Sale</SelectItem>
+                <SelectItem value="all">{t("menuList.all")}</SelectItem>
+                <SelectItem value="on-sale">{t("menuList.onSale")}</SelectItem>
               </SelectContent>
             </Select>
             <Select>
-              <SelectTrigger className="h-9 w-36">
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-              </SelectContent>
+              <SelectTrigger className="h-9 w-36"><SelectValue placeholder={t("menuList.category")} /></SelectTrigger>
+              <SelectContent><SelectItem value="all">{t("menuList.all")}</SelectItem></SelectContent>
             </Select>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="h-9 gap-2">
-              <Settings2 className="h-4 w-4" />
-              Batch Operations
-            </Button>
-            <Button
-              className="h-9 gap-1 bg-primary text-primary-foreground hover:bg-primary/90"
-              onClick={() => navigate("/menu/new")}
-            >
-              <Plus className="h-4 w-4" />
-              Add item
+            <Button variant="outline" className="h-9 gap-2"><Settings2 className="h-4 w-4" />{t("menuList.batchOperations")}</Button>
+            <Button className="h-9 gap-1 bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => navigate("/menu/new")}>
+              <Plus className="h-4 w-4" />{t("menuList.addItem")}
             </Button>
           </div>
         </div>
@@ -293,32 +256,26 @@ const MenuListPage = () => {
           {/* Category sidebar */}
           <div className="w-56 shrink-0">
             <div className="mb-2 flex items-center justify-between">
-              <h2 className="text-sm font-semibold">Category</h2>
+              <h2 className="text-sm font-semibold">{t("menuList.category")}</h2>
               <div className="flex gap-1">
                 <TooltipProvider delayDuration={300}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <button
-                        className="rounded border border-border p-1 hover:bg-secondary"
-                        onClick={() => setSortDialogOpen(true)}
-                      >
+                      <button className="rounded border border-border p-1 hover:bg-secondary" onClick={() => setSortDialogOpen(true)}>
                         <List className="h-3.5 w-3.5 text-muted-foreground" />
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent side="top"><p>Sort categories</p></TooltipContent>
+                    <TooltipContent side="top"><p>{t("menuList.sortCategories")}</p></TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
                 <TooltipProvider delayDuration={300}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <button
-                        className="rounded border border-border p-1 hover:bg-secondary"
-                        onClick={() => setAddDialogOpen(true)}
-                      >
+                      <button className="rounded border border-border p-1 hover:bg-secondary" onClick={() => setAddDialogOpen(true)}>
                         <Plus className="h-3.5 w-3.5 text-muted-foreground" />
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent side="top"><p>Add category</p></TooltipContent>
+                    <TooltipContent side="top"><p>{t("menuList.addCategory")}</p></TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
@@ -329,9 +286,7 @@ const MenuListPage = () => {
                   key={idx}
                   onClick={() => setSelectedCategory(idx)}
                   className={`group relative flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors cursor-pointer ${
-                    selectedCategory === idx
-                      ? "bg-foreground font-semibold text-card"
-                      : "text-foreground hover:bg-secondary"
+                    selectedCategory === idx ? "bg-foreground font-semibold text-card" : "text-foreground hover:bg-secondary"
                   }`}
                 >
                   <TruncatedText text={cat.name} className="flex-1 min-w-0 mr-2" />
@@ -342,37 +297,20 @@ const MenuListPage = () => {
                     <DropdownMenuTrigger asChild>
                       <button
                         onClick={(e) => e.stopPropagation()}
-                        className={`absolute right-2 rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity ${
-                          selectedCategory === idx ? "hover:bg-card/20" : "hover:bg-secondary"
-                        }`}
+                        className={`absolute right-2 rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity ${selectedCategory === idx ? "hover:bg-card/20" : "hover:bg-secondary"}`}
                       >
                         <MoreHorizontal className={`h-4 w-4 ${selectedCategory === idx ? "text-card" : "text-muted-foreground"}`} />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" side="right" className="w-40">
-                      <DropdownMenuItem 
-                        className="gap-2 cursor-pointer"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditCategory(idx);
-                        }}
-                      >
-                        <Pencil className="h-4 w-4" />
-                        Edit
+                      <DropdownMenuItem className="gap-2 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleEditCategory(idx); }}>
+                        <Pencil className="h-4 w-4" />{t("menuList.edit")}
                       </DropdownMenuItem>
                       <DropdownMenuItem className="gap-2 cursor-pointer">
-                        <Clock4 className="h-4 w-4" />
-                        Set pinned time
+                        <Clock4 className="h-4 w-4" />{t("menuList.setPinnedTime")}
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="gap-2 text-destructive focus:text-destructive cursor-pointer"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteCategory(idx);
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        Delete
+                      <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive cursor-pointer" onClick={(e) => { e.stopPropagation(); handleDeleteCategory(idx); }}>
+                        <Trash2 className="h-4 w-4" />{t("menuList.delete")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -387,81 +325,62 @@ const MenuListPage = () => {
               <h2 className="text-base font-semibold">
                 {categories[selectedCategory].name}{" "}
                 <span className="font-normal text-muted-foreground">
-                  {categories[selectedCategory].count} items
+                  {categories[selectedCategory].count} {t("menuList.itemsCount")}
                 </span>
               </h2>
-              <button
-                onClick={() => setItemSortDialogOpen(true)}
-                className="rounded border border-border p-1 hover:bg-secondary"
-              >
+              <button onClick={() => setItemSortDialogOpen(true)} className="rounded border border-border p-1 hover:bg-secondary">
                 <List className="h-3.5 w-3.5 text-muted-foreground" />
               </button>
             </div>
 
             {/* Table header */}
             <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] gap-2 border-b border-border px-2 pb-2 text-xs text-muted-foreground">
-              <span>Title</span>
-              <span className="text-right">Delivery</span>
-              <span className="text-right">Pick-up</span>
-              <span className="text-right">Stock</span>
-              <span className="text-center">Status</span>
+              <span>{t("menuList.title")}</span>
+              <span className="text-right">{t("menuList.delivery")}</span>
+              <span className="text-right">{t("menuList.pickUp")}</span>
+              <span className="text-right">{t("menuList.stock")}</span>
+              <span className="text-center">{t("menuList.status")}</span>
               <span></span>
             </div>
 
             {(categoryItems[selectedCategory] || []).length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center py-20">
                 <img src={emptyMenuImage} alt="Empty menu" className="mb-6 h-32 w-32 object-contain" />
-                <p className="mb-4 text-base font-semibold text-foreground">Start building your menu</p>
-                <Button
-                  onClick={() => navigate("/menu/new")}
-                  className="bg-[hsl(50,100%,50%)] text-foreground hover:bg-[hsl(50,100%,45%)] font-medium"
-                >
-                  <Plus className="h-4 w-4 mr-1" />
-                  Add item
+                <p className="mb-4 text-base font-semibold text-foreground">{t("menuList.startBuilding")}</p>
+                <Button onClick={() => navigate("/menu/new")} className="bg-[hsl(50,100%,50%)] text-foreground hover:bg-[hsl(50,100%,45%)] font-medium">
+                  <Plus className="h-4 w-4 mr-1" />{t("menuList.addItem")}
                 </Button>
               </div>
             ) : (
               <>
-
-                {/* Items */}
                 <div className="divide-y divide-border">
                   {(categoryItems[selectedCategory] || []).map((item) => (
                     <div key={item.id}>
-                      {/* Main item row */}
                       <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-2xl">
-                            {item.image}
-                          </div>
+                          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-2xl">{item.image}</div>
                           <div>
-                            <p
-                              className={`text-sm font-medium cursor-pointer hover:underline ${!item.status ? "text-muted-foreground/50" : ""}`}
-                              onClick={() => navigate(`/menu/edit/${item.id}`)}
-                            >{item.title}</p>
+                            <p className={`text-sm font-medium cursor-pointer hover:underline ${!item.status ? "text-muted-foreground/50" : ""}`} onClick={() => navigate(`/menu/edit/${item.id}`)}>{item.title}</p>
                             {(item.reviewStatus || item.marketingActivity || item.availability || item.notSoldIndependently) && (
                               <div className="mt-1 flex flex-wrap gap-1.5">
                                 {item.reviewStatus === "under_review" && (
                                   <span className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground">
-                                    <Hourglass className="h-3 w-3" />
-                                    Under review
+                                    <Hourglass className="h-3 w-3" />{t("menuList.underReview")}
                                   </span>
                                 )}
                                 {item.marketingActivity && (
                                   <span className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground">
-                                    <Megaphone className="h-3 w-3" />
-                                    In marketing activities
+                                    <Megaphone className="h-3 w-3" />{t("menuList.inMarketingActivities")}
                                   </span>
                                 )}
                                 {item.availability && (
                                   <span className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground">
-                                    <Clock className="h-3 w-3" />
-                                    {item.availability}
+                                    <Clock className="h-3 w-3" />{item.availability}
                                   </span>
                                 )}
                                 {item.notSoldIndependently && (
                                   <span className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground">
-                                    <Lock className="h-3 w-3" />
-                                    Cannot be sold independently
+                                    <Lock className="h-3 w-3" />{t("menuList.cannotSoldIndependently")}
                                   </span>
                                 )}
                               </div>
@@ -474,37 +393,19 @@ const MenuListPage = () => {
                               <Input
                                 ref={priceInputRef}
                                 value={editingPriceValue}
-                                onChange={(e) => {
-                                  setEditingPriceValue(e.target.value);
-                                  if (e.target.value.trim()) setEditingPriceError(false);
-                                  setEditingPriceWarning(false);
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") confirmEditPrice();
-                                  if (e.key === "Escape") cancelEditPrice();
-                                }}
+                                onChange={(e) => { setEditingPriceValue(e.target.value); if (e.target.value.trim()) setEditingPriceError(false); setEditingPriceWarning(false); }}
+                                onKeyDown={(e) => { if (e.key === "Enter") confirmEditPrice(); if (e.key === "Escape") cancelEditPrice(); }}
                                 className={`h-7 w-28 text-right text-sm ${editingPriceError ? "border-destructive focus-visible:ring-destructive" : editingPriceWarning ? "border-orange-400 focus-visible:ring-orange-400" : ""}`}
-                                placeholder="Please enter"
+                                placeholder={t("menuList.pleaseEnter")}
                               />
-                              <button onClick={confirmEditPrice} className="p-0.5 text-muted-foreground hover:text-foreground">
-                                <Check className="h-4 w-4" />
-                              </button>
-                              <button onClick={cancelEditPrice} className="p-0.5 text-muted-foreground hover:text-foreground">
-                                <X className="h-4 w-4" />
-                              </button>
+                              <button onClick={confirmEditPrice} className="p-0.5 text-muted-foreground hover:text-foreground"><Check className="h-4 w-4" /></button>
+                              <button onClick={cancelEditPrice} className="p-0.5 text-muted-foreground hover:text-foreground"><X className="h-4 w-4" /></button>
                             </div>
-                            {editingPriceError && (
-                              <p className="mt-1 text-xs text-destructive">No puede estar vacío</p>
-                            )}
-                            {editingPriceWarning && !editingPriceError && (
-                              <p className="mt-1 text-xs text-orange-400">Please save first.</p>
-                            )}
+                            {editingPriceError && <p className="mt-1 text-xs text-destructive">{t("menuList.noCannotBeEmpty")}</p>}
+                            {editingPriceWarning && !editingPriceError && <p className="mt-1 text-xs text-orange-400">{t("menuList.pleaseSaveFirst")}</p>}
                           </div>
                         ) : (
-                          <span
-                            className={`cursor-pointer rounded px-2 py-1 text-right text-sm transition-colors hover:bg-secondary ${!item.status ? "text-muted-foreground/50" : ""}`}
-                            onClick={() => startEditPrice(item)}
-                          >
+                          <span className={`cursor-pointer rounded px-2 py-1 text-right text-sm transition-colors hover:bg-secondary ${!item.status ? "text-muted-foreground/50" : ""}`} onClick={() => startEditPrice(item)}>
                             {item.deliveryPrice}
                           </span>
                         )}
@@ -516,9 +417,7 @@ const MenuListPage = () => {
                             onCheckedChange={(checked) => {
                               setCategoryItems(prev => ({
                                 ...prev,
-                                [selectedCategory]: prev[selectedCategory].map(i =>
-                                  i.id === item.id ? { ...i, status: checked } : i
-                                )
+                                [selectedCategory]: prev[selectedCategory].map(i => i.id === item.id ? { ...i, status: checked } : i)
                               }));
                             }}
                           />
@@ -528,37 +427,24 @@ const MenuListPage = () => {
                         </button>
                       </div>
 
-                      {/* Add-on groups */}
                       {item.addOns && item.addOns.length > 0 &&
                         item.addOns.map((group, gi) => (
                           <div key={gi} className="border-t border-border bg-secondary/30">
                             <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-2">
                               <span className="pl-4 text-xs font-medium text-muted-foreground">
                                 {group.name}{" "}
-                                {group.required && (
-                                  <span className="text-destructive">(Required)</span>
-                                )}
+                                {group.required && <span className="text-destructive">({t("menuList.required")})</span>}
                               </span>
                             </div>
                             {group.items.map((sub, si) => (
                               <div key={si}>
                                 <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-2">
                                   <span className="pl-8 text-sm">{sub.name}</span>
-                                  <span className="text-right text-sm">
-                                    {sub.deliveryPrice}
-                                  </span>
-                                  <span className="text-right text-sm">
-                                    {sub.pickupPrice}
-                                  </span>
-                                  <span className="text-right text-sm">
-                                    {sub.stock}
-                                  </span>
-                                  <div className="flex justify-center">
-                                    <Switch checked={sub.status} />
-                                  </div>
-                                  <button className="rounded p-1 hover:bg-secondary">
-                                    <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                                  </button>
+                                  <span className="text-right text-sm">{sub.deliveryPrice}</span>
+                                  <span className="text-right text-sm">{sub.pickupPrice}</span>
+                                  <span className="text-right text-sm">{sub.stock}</span>
+                                  <div className="flex justify-center"><Switch checked={sub.status} /></div>
+                                  <button className="rounded p-1 hover:bg-secondary"><MoreHorizontal className="h-4 w-4 text-muted-foreground" /></button>
                                 </div>
                                 {sub.warning && sub.warning.includes("prohibited") && (
                                   <p className="mb-1 pl-4 text-xs text-destructive">
@@ -581,37 +467,13 @@ const MenuListPage = () => {
       {/* Edit Category Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Edit category</DialogTitle>
-          </DialogHeader>
+          <DialogHeader><DialogTitle>{t("menuList.editCategory")}</DialogTitle></DialogHeader>
           <div className="py-4">
-            <Input
-              ref={inputRef}
-              value={editCategoryName}
-              onChange={(e) => setEditCategoryName(e.target.value)}
-              placeholder="Category name"
-              className="h-12"
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && editCategoryName.trim()) {
-                  handleSaveCategory();
-                }
-              }}
-            />
+            <Input ref={inputRef} value={editCategoryName} onChange={(e) => setEditCategoryName(e.target.value)} placeholder={t("menuList.categoryName")} className="h-12" onKeyDown={(e) => { if (e.key === "Enter" && editCategoryName.trim()) handleSaveCategory(); }} />
           </div>
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button
-              variant="outline"
-              onClick={() => setEditDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSaveCategory}
-              disabled={!editCategoryName.trim()}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              OK
-            </Button>
+            <Button variant="outline" onClick={() => setEditDialogOpen(false)}>{t("menuList.cancel")}</Button>
+            <Button onClick={handleSaveCategory} disabled={!editCategoryName.trim()} className="bg-primary text-primary-foreground hover:bg-primary/90">{t("menuList.ok")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -622,22 +484,13 @@ const MenuListPage = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertCircle className="h-5 w-5 text-orange-500" />
-              Are you sure you want to delete?
+              {t("menuList.deleteCategory")}
             </DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            Deleting a category will also delete all dishes under that category, and these dishes cannot be recovered. Please be careful.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("menuList.deleteCategoryWarning")}</p>
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              onClick={handleConfirmDelete}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              OK
-            </Button>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>{t("menuList.cancel")}</Button>
+            <Button onClick={handleConfirmDelete} className="bg-primary text-primary-foreground hover:bg-primary/90">{t("menuList.ok")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -645,52 +498,19 @@ const MenuListPage = () => {
       {/* Add Category Dialog */}
       <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
         <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Add category</DialogTitle>
-          </DialogHeader>
+          <DialogHeader><DialogTitle>{t("menuList.addCategory")}</DialogTitle></DialogHeader>
           <div className="py-4">
-            <Input
-              ref={addInputRef}
-              value={newCategoryName}
-              onChange={(e) => setNewCategoryName(e.target.value)}
-              placeholder="Please enter the category name"
-              className="h-12"
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && newCategoryName.trim()) {
-                  handleAddCategory();
-                }
-              }}
-            />
+            <Input ref={addInputRef} value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} placeholder={t("menuList.enterCategoryName")} className="h-12" onKeyDown={(e) => { if (e.key === "Enter" && newCategoryName.trim()) handleAddCategory(); }} />
           </div>
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => { setAddDialogOpen(false); setNewCategoryName(""); }}>
-              Cancel
-            </Button>
-            <Button
-              onClick={handleAddCategory}
-              disabled={!newCategoryName.trim()}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              OK
-            </Button>
+            <Button variant="outline" onClick={() => { setAddDialogOpen(false); setNewCategoryName(""); }}>{t("menuList.cancel")}</Button>
+            <Button onClick={handleAddCategory} disabled={!newCategoryName.trim()} className="bg-primary text-primary-foreground hover:bg-primary/90">{t("menuList.ok")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <CategorySortDialog
-        open={sortDialogOpen}
-        onOpenChange={setSortDialogOpen}
-        categories={categories}
-        onSave={handleSortSave}
-      />
-
-      <ItemSortDialog
-        open={itemSortDialogOpen}
-        onOpenChange={setItemSortDialogOpen}
-        categoryName={categories[selectedCategory]?.name || ""}
-        items={(categoryItems[selectedCategory] || []).map(i => ({ id: i.id, title: i.title, image: i.image }))}
-        onSave={handleItemSortSave}
-      />
+      <CategorySortDialog open={sortDialogOpen} onOpenChange={setSortDialogOpen} categories={categories} onSave={handleSortSave} />
+      <ItemSortDialog open={itemSortDialogOpen} onOpenChange={setItemSortDialogOpen} categoryName={categories[selectedCategory]?.name || ""} items={(categoryItems[selectedCategory] || []).map(i => ({ id: i.id, title: i.title, image: i.image }))} onSave={handleItemSortSave} />
       </div>
     </AdminLayout>
   );
