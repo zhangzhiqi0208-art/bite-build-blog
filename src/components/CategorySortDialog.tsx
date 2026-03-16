@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { ArrowUpToLine, GripVertical, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +23,7 @@ export const CategorySortDialog = ({
   categories,
   onSave,
 }: CategorySortDialogProps) => {
+  const { t } = useTranslation();
   const [items, setItems] = useState(categories);
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
@@ -31,7 +33,6 @@ export const CategorySortDialog = ({
     if (open) setItems([...categories]);
   }, [open, categories]);
 
-  // Reset items when dialog opens
   const handleOpenChange = (val: boolean) => {
     if (val) setItems([...categories]);
     onOpenChange(val);
@@ -80,7 +81,7 @@ export const CategorySortDialog = ({
         style={{ maxHeight: "calc(100vh - 120px)" }}
       >
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-border">
-          <DialogTitle>Category sorting</DialogTitle>
+          <DialogTitle>{t("categorySortDialog.title")}</DialogTitle>
           <button
             onClick={() => onOpenChange(false)}
             className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100"
@@ -114,7 +115,7 @@ export const CategorySortDialog = ({
                       ? "text-muted-foreground/30 cursor-not-allowed"
                       : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                   }`}
-                  title="Pin to top"
+                  title={t("categorySortDialog.pinToTop")}
                 >
                   <ArrowUpToLine className="h-4 w-4" />
                 </button>
@@ -130,13 +131,13 @@ export const CategorySortDialog = ({
 
         <div className="flex justify-end gap-2 px-6 py-4 border-t border-border">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t("categorySortDialog.cancel")}
           </Button>
           <Button
             onClick={handleSave}
             className="bg-primary text-primary-foreground hover:bg-primary/90"
           >
-            Save
+            {t("categorySortDialog.save")}
           </Button>
         </div>
       </DialogContent>
