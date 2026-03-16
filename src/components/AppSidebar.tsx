@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard,
   BarChart3,
@@ -15,47 +16,48 @@ import {
   PanelLeftClose,
 } from "lucide-react";
 
-const navSections = [
-  {
-    label: "ANALYSIS",
-    items: [
-      { icon: BarChart3, label: "Analytics", path: "/analytics" },
-      { icon: Star, label: "Customer Feedback", path: "/feedback" },
-      { icon: FileText, label: "Reports", path: "/reports" },
-    ],
-  },
-  {
-    label: "MARKETING",
-    items: [{ icon: Tag, label: "Promotions", path: "/promotions" }],
-  },
-  {
-    label: "MENU",
-    items: [{ icon: UtensilsCrossed, label: "Menu", path: "/" }],
-  },
-  {
-    label: "ORDER",
-    items: [{ icon: ClipboardList, label: "Orders", path: "/orders" }],
-  },
-  {
-    label: "STORE SETTING",
-    items: [
-      { icon: Store, label: "Store", path: "/store" },
-      { icon: Users, label: "Users", path: "/users" },
-      { icon: DollarSign, label: "Finance", path: "/finance" },
-    ],
-  },
-  {
-    label: "STORE SETTING",
-    items: [
-      { icon: Settings, label: "Settings", path: "/settings" },
-      { icon: GraduationCap, label: "Academy", path: "/academy" },
-    ],
-  },
-];
-
 export const AppSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
+
+  const navSections = [
+    {
+      label: t("sidebar.analysis"),
+      items: [
+        { icon: BarChart3, label: t("sidebar.analytics"), path: "/analytics" },
+        { icon: Star, label: t("sidebar.customerFeedback"), path: "/feedback" },
+        { icon: FileText, label: t("sidebar.reports"), path: "/reports" },
+      ],
+    },
+    {
+      label: t("sidebar.marketing"),
+      items: [{ icon: Tag, label: t("sidebar.promotions"), path: "/promotions" }],
+    },
+    {
+      label: t("sidebar.menu"),
+      items: [{ icon: UtensilsCrossed, label: t("sidebar.menuItem"), path: "/" }],
+    },
+    {
+      label: t("sidebar.order"),
+      items: [{ icon: ClipboardList, label: t("sidebar.orders"), path: "/orders" }],
+    },
+    {
+      label: t("sidebar.storeSetting"),
+      items: [
+        { icon: Store, label: t("sidebar.store"), path: "/store" },
+        { icon: Users, label: t("sidebar.users"), path: "/users" },
+        { icon: DollarSign, label: t("sidebar.finance"), path: "/finance" },
+      ],
+    },
+    {
+      label: t("sidebar.storeSetting"),
+      items: [
+        { icon: Settings, label: t("sidebar.settings"), path: "/settings" },
+        { icon: GraduationCap, label: t("sidebar.academy"), path: "/academy" },
+      ],
+    },
+  ];
 
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/" || location.pathname.startsWith("/menu");
@@ -70,7 +72,7 @@ export const AppSidebar = () => {
           className="mb-4 flex w-full cursor-not-allowed items-center gap-2 rounded-lg px-3 py-2 text-muted-foreground/50"
         >
           <LayoutDashboard className="h-5 w-5" />
-          <span className="text-sm font-medium">Overview</span>
+          <span className="text-sm font-medium">{t("sidebar.overview")}</span>
         </button>
 
         {navSections.map((section, sIdx) => (
@@ -105,7 +107,7 @@ export const AppSidebar = () => {
       <div className="border-t border-sidebar-border px-3 py-3">
         <button className="flex items-center gap-2 px-3 py-1 text-sm text-sidebar-muted hover:text-sidebar-foreground">
           <PanelLeftClose className="h-4 w-4" />
-          <span>Fold navigation</span>
+          <span>{t("sidebar.foldNavigation")}</span>
         </button>
       </div>
     </aside>

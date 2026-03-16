@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { ArrowUpToLine, GripVertical, X, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +29,7 @@ export const ItemSortDialog = ({
   items: initialItems,
   onSave,
 }: ItemSortDialogProps) => {
+  const { t } = useTranslation();
   const [items, setItems] = useState(initialItems);
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
@@ -85,7 +87,7 @@ export const ItemSortDialog = ({
         style={{ maxHeight: "calc(100vh - 120px)" }}
       >
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-border">
-          <DialogTitle>Item sorting</DialogTitle>
+          <DialogTitle>{t("itemSortDialog.title")}</DialogTitle>
           <button
             onClick={() => onOpenChange(false)}
             className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100"
@@ -95,10 +97,9 @@ export const ItemSortDialog = ({
         </div>
 
         <div className="flex-1 overflow-y-auto px-6">
-          {/* Category info banner */}
           <div className="flex items-center gap-2 rounded-lg bg-secondary px-3 py-2.5 my-3">
             <Info className="h-4 w-4 text-primary shrink-0" />
-            <span className="text-sm text-foreground">Category : {categoryName}</span>
+            <span className="text-sm text-foreground">{t("itemSortDialog.categoryLabel")} : {categoryName}</span>
           </div>
 
           {items.map((item, idx) => (
@@ -130,7 +131,7 @@ export const ItemSortDialog = ({
                       ? "text-muted-foreground/30 cursor-not-allowed"
                       : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                   }`}
-                  title="Pin to top"
+                  title={t("itemSortDialog.pinToTop")}
                 >
                   <ArrowUpToLine className="h-4 w-4" />
                 </button>
@@ -146,13 +147,13 @@ export const ItemSortDialog = ({
 
         <div className="flex justify-end gap-2 px-6 py-4 border-t border-border">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t("itemSortDialog.cancel")}
           </Button>
           <Button
             onClick={handleSave}
             className="bg-primary text-primary-foreground hover:bg-primary/90"
           >
-            Save
+            {t("itemSortDialog.save")}
           </Button>
         </div>
       </DialogContent>
