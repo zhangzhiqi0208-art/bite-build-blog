@@ -85,6 +85,7 @@ const NewItemPage = () => {
     setModifierGroups(prev => prev.map(g => g.id === id ? { ...g, ...updates } : g));
   };
 
+  useEffect(() => {
     if (existingData) {
       const { item, categoryIndex } = existingData;
       setItemType(item.itemType || "items");
