@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AdminLayout from "@/components/AdminLayout";
-import { ArrowLeft, ImagePlus, Plus, X } from "lucide-react";
+import { ArrowLeft, ImagePlus, Plus, X, GripVertical, Copy, Trash2, ChevronUp, ChevronDown, Link2, Save } from "lucide-react";
 import ImageUploadDialog from "@/components/ImageUploadDialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
