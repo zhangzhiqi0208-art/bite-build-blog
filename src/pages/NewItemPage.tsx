@@ -5,6 +5,7 @@ import AdminLayout from "@/components/AdminLayout";
 import { ArrowLeft, ImagePlus, Plus, X, GripVertical, Copy, Trash2, ChevronUp, ChevronDown, Link2, Save } from "lucide-react";
 import ImageUploadDialog from "@/components/ImageUploadDialog";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -83,6 +84,44 @@ const NewItemPage = () => {
 
   const updateModifierGroup = (id: string, updates: Partial<ModifierGroup>) => {
     setModifierGroups(prev => prev.map(g => g.id === id ? { ...g, ...updates } : g));
+  };
+
+  // New modifier dialog state
+  const [newModifierDialogOpen, setNewModifierDialogOpen] = useState(false);
+  const [newModifierTargetGroupId, setNewModifierTargetGroupId] = useState<string>("");
+  const [newModifierName, setNewModifierName] = useState("");
+  const [newModifierCategory, setNewModifierCategory] = useState("");
+  const [newModifierDeliveryEnabled, setNewModifierDeliveryEnabled] = useState(true);
+  const [newModifierDeliveryPrice, setNewModifierDeliveryPrice] = useState("");
+  const [newModifierStockType, setNewModifierStockType] = useState("unlimited");
+  const [newModifierStockCount, setNewModifierStockCount] = useState("");
+  const [newModifierMaxLimit, setNewModifierMaxLimit] = useState("");
+  const [newModifierCanSoldSeparately, setNewModifierCanSoldSeparately] = useState("yes");
+
+  const openNewModifierDialog = (groupId: string) => {
+    setNewModifierTargetGroupId(groupId);
+    setNewModifierName("");
+    setNewModifierCategory("");
+    setNewModifierDeliveryEnabled(true);
+    setNewModifierDeliveryPrice("");
+    setNewModifierStockType("unlimited");
+    setNewModifierStockCount("");
+    setNewModifierMaxLimit("");
+    setNewModifierCanSoldSeparately("yes");
+    setNewModifierDialogOpen(true);
+  };
+
+  const handleNewModifierSubmit = () => {
+    if (!newModifierName.trim()) return;
+    const newItem: ModifierGroupItem = {
+      name: newModifierName.trim(),
+      price: newModifierDeliveryPrice ? `R$${newModifierDeliveryPrice}` : "R$0.00",
+      maxQty: newModifierMaxLimit || "-",
+    };
+    setModifierGroups(prev => prev.map(g =>
+      g.id === newModifierTargetGroupId ? { ...g, items: [...g.items, newItem] } : g
+    ));
+    setNewModifierDialogOpen(false);
   };
 
   useEffect(() => {
@@ -453,7 +492,7 @@ const NewItemPage = () => {
                         <Link2 className="h-4 w-4" />
                         {t("newItem.linkExistingModifier")}
                       </button>
-                      <button className="flex items-center justify-center gap-2 py-3 text-sm font-medium text-[hsl(30,100%,50%)] hover:bg-secondary transition-colors">
+                      <button onClick={() => openNewModifierDialog(group.id)} className="flex items-center justify-center gap-2 py-3 text-sm font-medium text-[hsl(30,100%,50%)] hover:bg-secondary transition-colors">
                         <Plus className="h-4 w-4" />
                         {t("newItem.createNewModifier")}
                       </button>
@@ -582,6 +621,93 @@ const NewItemPage = () => {
           <Button variant="outline" onClick={() => navigate("/")}>{t("newItem.discard")}</Button>
         </div>
       </div>
+
+      {/* New Modifier Dialog */}
+      <Dialog open={newModifierDialogOpen} onOpenChange={setNewModifierDialogOpen}>
+        <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t("newItem.createSubItem")}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-5 pt-2">
+            {/* Name */}
+            <div>
+              <label className="mb-1 block text-sm font-medium">Name <span className="text-[hsl(340,82%,52%)]">*</span></label>
+              <Input placeholder={t("newItem.pleaseEnter")} value={newModifierName} onChange={(e) => setNewModifierName(e.target.value)} />
+            </div>
+
+            {/* Store-defined Category */}
+            <div>
+              <label className="mb-1 block text-sm font-medium">{t("newItem.storeDefinedCategory")} <span className="text-[hsl(340,82%,52%)]">*</span> ℹ</label>
+              <Select value={newModifierCategory} onValueChange={setNewModifierCategory}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t("newItem.pleaseSelect")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((cat, idx) => (<SelectItem key={idx} value={String(idx)}>{cat.name}</SelectItem>))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Price */}
+            <div>
+              <label className="mb-1 block text-sm font-semibold">{t("newItem.priceCol")}</label>
+              <div className="mb-3 rounded-lg bg-[hsl(210,40%,96%)] px-3 py-2 flex items-center gap-2 text-sm text-muted-foreground">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[hsl(210,100%,56%)] text-[10px] text-white font-bold">i</span>
+                <span className="flex-1">{t("newItem.priceNote")}</span>
+                <button className="text-muted-foreground hover:text-foreground"><X className="h-4 w-4" /></button>
+              </div>
+              <div className="rounded-lg border border-border p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <span className="font-medium text-sm">{t("newItem.delivery")}</span>
+                    <p className="text-xs text-muted-foreground">{t("newItem.originalPrice")}</p>
+                  </div>
+                  <Switch checked={newModifierDeliveryEnabled} onCheckedChange={setNewModifierDeliveryEnabled} />
+                </div>
+                {newModifierDeliveryEnabled && (
+                  <div className="relative">
+                    <Input placeholder={t("newItem.pleaseEnter")} value={newModifierDeliveryPrice} onChange={(e) => setNewModifierDeliveryPrice(e.target.value)} className="pr-10" />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">R$</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Stocking */}
+            <div>
+              <label className="mb-1 block text-sm font-semibold">{t("newItem.stocking")}</label>
+              <RadioGroup value={newModifierStockType} onValueChange={setNewModifierStockType} className="flex gap-6">
+                <div className="flex items-center gap-2"><RadioGroupItem value="unlimited" id="mod-stock-unlimited" /><Label htmlFor="mod-stock-unlimited">{t("newItem.unlimited")}</Label></div>
+                <div className="flex items-center gap-2"><RadioGroupItem value="custom" id="mod-stock-custom" /><Label htmlFor="mod-stock-custom">{t("newItem.custom")}</Label></div>
+              </RadioGroup>
+              {newModifierStockType === "custom" && (
+                <Input type="number" className="mt-2 w-32" value={newModifierStockCount} onChange={(e) => setNewModifierStockCount(e.target.value)} />
+              )}
+            </div>
+
+            {/* Max Limit */}
+            <div>
+              <label className="mb-1 block text-sm font-semibold">{t("newItem.maxLimit")} <span className="text-[hsl(340,82%,52%)]">*</span></label>
+              <Input type="number" className="w-32" value={newModifierMaxLimit} onChange={(e) => setNewModifierMaxLimit(e.target.value)} />
+            </div>
+
+            {/* Can be sold separately */}
+            <div>
+              <label className="mb-1 block text-sm font-semibold">{t("newItem.canSoldSeparately")}</label>
+              <RadioGroup value={newModifierCanSoldSeparately} onValueChange={setNewModifierCanSoldSeparately} className="flex gap-6">
+                <div className="flex items-center gap-2"><RadioGroupItem value="yes" id="mod-sold-yes" /><Label htmlFor="mod-sold-yes">{t("newItem.canSoldYes")}</Label></div>
+                <div className="flex items-center gap-2"><RadioGroupItem value="no" id="mod-sold-no" /><Label htmlFor="mod-sold-no">{t("newItem.canSoldNo")}</Label></div>
+              </RadioGroup>
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-end gap-3 pt-2">
+              <Button variant="outline" onClick={() => setNewModifierDialogOpen(false)}>{t("newItem.cancel")}</Button>
+              <Button onClick={handleNewModifierSubmit} className="bg-[hsl(48,96%,53%)] text-foreground hover:bg-[hsl(48,96%,45%)]">OK</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };
