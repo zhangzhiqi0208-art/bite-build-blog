@@ -326,7 +326,25 @@ const NewItemPage = () => {
           <div ref={modificationsRef} className="space-y-6">
           <div>
             <label className="mb-2 block text-sm font-medium">{t("newItem.modificationGroup")}</label>
-            <Button variant="outline" className="w-full gap-1"><Plus className="h-4 w-4" />{t("newItem.addGroup")}</Button>
+            <div className="relative group">
+              <Button variant="outline" className="w-full gap-1">
+                <Plus className="h-4 w-4" />{t("newItem.addGroup")}
+              </Button>
+              <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 absolute left-0 right-0 top-full z-20 mt-1 rounded-lg border border-border bg-card shadow-lg p-2 space-y-1">
+                <button className="flex w-full items-center gap-2 rounded-md px-3 py-3 text-sm font-medium text-[hsl(30,100%,50%)] hover:bg-secondary transition-colors">
+                  <Plus className="h-4 w-4" />
+                  {t("newItem.createNewGroup")}
+                </button>
+                <button className="flex w-full items-center gap-2 rounded-md px-3 py-3 text-sm font-medium text-[hsl(30,100%,50%)] hover:bg-secondary transition-colors">
+                  <Plus className="h-4 w-4" />
+                  {t("newItem.selectExistingGroup")}
+                </button>
+                <button className="flex w-full items-center gap-2 rounded-md px-3 py-3 text-sm font-medium text-[hsl(30,100%,50%)] hover:bg-secondary transition-colors">
+                  <Plus className="h-4 w-4" />
+                  {t("newItem.copyOtherItemGroup")}
+                </button>
+              </div>
+            </div>
           </div>
           </div>{/* end modifications section */}
 
