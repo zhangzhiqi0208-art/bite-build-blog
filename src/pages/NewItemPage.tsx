@@ -492,7 +492,7 @@ const NewItemPage = () => {
                         <Link2 className="h-4 w-4" />
                         {t("newItem.linkExistingModifier")}
                       </button>
-                      <button className="flex items-center justify-center gap-2 py-3 text-sm font-medium text-[hsl(30,100%,50%)] hover:bg-secondary transition-colors">
+                      <button onClick={() => openNewModifierDialog(group.id)} className="flex items-center justify-center gap-2 py-3 text-sm font-medium text-[hsl(30,100%,50%)] hover:bg-secondary transition-colors">
                         <Plus className="h-4 w-4" />
                         {t("newItem.createNewModifier")}
                       </button>
