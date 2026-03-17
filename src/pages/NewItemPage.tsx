@@ -46,7 +46,45 @@ const NewItemPage = () => {
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
 
-  useEffect(() => {
+  interface ModifierGroupItem {
+    name: string;
+    price: string;
+    maxQty: string;
+  }
+
+  interface ModifierGroup {
+    id: string;
+    name: string;
+    customId: string;
+    min: string;
+    max: string;
+    allowMultiple: boolean;
+    required: boolean;
+    collapsed: boolean;
+    items: ModifierGroupItem[];
+  }
+
+  const [modifierGroups, setModifierGroups] = useState<ModifierGroup[]>([]);
+
+  const addNewModifierGroup = () => {
+    setModifierGroups(prev => [...prev, {
+      id: `mg-${Date.now()}`, name: "", customId: "", min: "1", max: "1",
+      allowMultiple: false, required: false, collapsed: false, items: [],
+    }]);
+  };
+
+  const removeModifierGroup = (id: string) => {
+    setModifierGroups(prev => prev.filter(g => g.id !== id));
+  };
+
+  const toggleModifierCollapse = (id: string) => {
+    setModifierGroups(prev => prev.map(g => g.id === id ? { ...g, collapsed: !g.collapsed } : g));
+  };
+
+  const updateModifierGroup = (id: string, updates: Partial<ModifierGroup>) => {
+    setModifierGroups(prev => prev.map(g => g.id === id ? { ...g, ...updates } : g));
+  };
+
     if (existingData) {
       const { item, categoryIndex } = existingData;
       setItemType(item.itemType || "items");
