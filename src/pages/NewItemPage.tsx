@@ -5,6 +5,7 @@ import AdminLayout from "@/components/AdminLayout";
 import { ArrowLeft, ImagePlus, Plus, X, GripVertical, Copy, Trash2, ChevronUp, ChevronDown, Link2, Save } from "lucide-react";
 import ImageUploadDialog from "@/components/ImageUploadDialog";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
