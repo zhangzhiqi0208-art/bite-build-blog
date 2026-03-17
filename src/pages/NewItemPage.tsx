@@ -326,12 +326,119 @@ const NewItemPage = () => {
           <div ref={modificationsRef} className="space-y-6">
           <div>
             <label className="mb-2 block text-sm font-medium">{t("newItem.modificationGroup")}</label>
+
+            {/* Modifier group cards */}
+            {modifierGroups.map((group, groupIdx) => (
+              <div key={group.id} className="mb-4 rounded-lg border-2 border-[hsl(40,100%,50%)] bg-card">
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab" />
+                    <span className="font-semibold italic">{group.name || t("newItem.newModifier")}</span>
+                    <Badge className="bg-[hsl(48,96%,53%)] text-foreground hover:bg-[hsl(48,96%,45%)] text-xs">{t("newItem.unsaved")}</Badge>
+                    <span className="text-sm text-muted-foreground">
+                      {group.items.length} {t("newItem.modifierCount")} · {group.min}-{group.max} {t("newItem.options")}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button className="p-1.5 rounded hover:bg-secondary"><Copy className="h-4 w-4 text-muted-foreground" /></button>
+                    <button onClick={() => removeModifierGroup(group.id)} className="p-1.5 rounded hover:bg-secondary"><Trash2 className="h-4 w-4 text-muted-foreground" /></button>
+                    <div className="w-px h-5 bg-border mx-1" />
+                    <button onClick={() => toggleModifierCollapse(group.id)} className="p-1.5 rounded hover:bg-secondary">
+                      {group.collapsed ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronUp className="h-4 w-4 text-muted-foreground" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Collapsible body */}
+                {!group.collapsed && (
+                  <div className="p-4 space-y-4">
+                    {/* Form fields */}
+                    <div className="grid grid-cols-[1fr_1fr_auto_auto] gap-3 items-end">
+                      <div>
+                        <label className="mb-1 block text-xs text-muted-foreground">{t("newItem.modifierName")}</label>
+                        <Input placeholder={t("newItem.namePlaceholder")} value={group.name} onChange={(e) => updateModifierGroup(group.id, { name: e.target.value })} />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-xs text-muted-foreground">{t("newItem.customModifierGroupId")}</label>
+                        <Input placeholder="ID" value={group.customId} onChange={(e) => updateModifierGroup(group.id, { customId: e.target.value })} />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-xs text-muted-foreground">MIN</label>
+                        <Input className="w-16" value={group.min} onChange={(e) => updateModifierGroup(group.id, { min: e.target.value })} />
+                      </div>
+                      <div className="flex items-end gap-1">
+                        <span className="pb-2 text-muted-foreground">-</span>
+                        <div>
+                          <label className="mb-1 block text-xs text-muted-foreground">MAX</label>
+                          <Input className="w-16" value={group.max} onChange={(e) => updateModifierGroup(group.id, { max: e.target.value })} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Checkboxes */}
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input type="checkbox" className="rounded border-border" checked={group.allowMultiple} onChange={(e) => updateModifierGroup(group.id, { allowMultiple: e.target.checked })} />
+                        {t("newItem.customerCanAddMultiple")}
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input type="checkbox" className="rounded border-border" checked={group.required} onChange={(e) => updateModifierGroup(group.id, { required: e.target.checked })} />
+                        {t("newItem.requiredToSelect")}
+                      </label>
+                    </div>
+
+                    {/* Items table */}
+                    <div className="rounded-lg bg-secondary/50 overflow-hidden">
+                      <div className="grid grid-cols-3 px-4 py-2 text-sm font-medium text-muted-foreground bg-secondary">
+                        <span>{t("newItem.itemNameCol")}</span>
+                        <span className="text-center">{t("newItem.priceCol")}</span>
+                        <span className="text-center">Max QTY</span>
+                      </div>
+                      {group.items.length === 0 ? (
+                        <div className="py-8 text-center text-sm text-muted-foreground">{t("newItem.pleaseLinkSubItems")}</div>
+                      ) : (
+                        group.items.map((item, idx) => (
+                          <div key={idx} className="grid grid-cols-3 px-4 py-2 border-t border-border text-sm">
+                            <span>{item.name}</span>
+                            <span className="text-center">{item.price}</span>
+                            <span className="text-center">{item.maxQty}</span>
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    {/* Bottom actions */}
+                    <div className="grid grid-cols-2 rounded-lg border border-border overflow-hidden">
+                      <button className="flex items-center justify-center gap-2 py-3 text-sm font-medium text-[hsl(30,100%,50%)] hover:bg-secondary transition-colors border-r border-border">
+                        <Link2 className="h-4 w-4" />
+                        {t("newItem.linkExistingModifier")}
+                      </button>
+                      <button className="flex items-center justify-center gap-2 py-3 text-sm font-medium text-[hsl(30,100%,50%)] hover:bg-secondary transition-colors">
+                        <Plus className="h-4 w-4" />
+                        {t("newItem.createNewModifier")}
+                      </button>
+                    </div>
+
+                    {/* Save button */}
+                    <div className="flex justify-end">
+                      <Button className="bg-[hsl(48,96%,53%)] text-foreground hover:bg-[hsl(48,96%,45%)] gap-1">
+                        <Save className="h-4 w-4" />
+                        {t("newItem.saveChanges")}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {/* Add group button with hover dropdown */}
             <div className="relative group">
               <Button variant="outline" className="w-full gap-1">
                 <Plus className="h-4 w-4" />{t("newItem.addGroup")}
               </Button>
               <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 absolute left-0 right-0 top-full z-20 mt-1 rounded-lg border border-border bg-card shadow-lg p-2 space-y-1">
-                <button className="flex w-full items-center gap-2 rounded-md px-3 py-3 text-sm font-medium text-[hsl(30,100%,50%)] hover:bg-secondary transition-colors">
+                <button onClick={addNewModifierGroup} className="flex w-full items-center gap-2 rounded-md px-3 py-3 text-sm font-medium text-[hsl(30,100%,50%)] hover:bg-secondary transition-colors">
                   <Plus className="h-4 w-4" />
                   {t("newItem.createNewGroup")}
                 </button>
