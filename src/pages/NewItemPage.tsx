@@ -85,6 +85,44 @@ const NewItemPage = () => {
     setModifierGroups(prev => prev.map(g => g.id === id ? { ...g, ...updates } : g));
   };
 
+  // New modifier dialog state
+  const [newModifierDialogOpen, setNewModifierDialogOpen] = useState(false);
+  const [newModifierTargetGroupId, setNewModifierTargetGroupId] = useState<string>("");
+  const [newModifierName, setNewModifierName] = useState("");
+  const [newModifierCategory, setNewModifierCategory] = useState("");
+  const [newModifierDeliveryEnabled, setNewModifierDeliveryEnabled] = useState(true);
+  const [newModifierDeliveryPrice, setNewModifierDeliveryPrice] = useState("");
+  const [newModifierStockType, setNewModifierStockType] = useState("unlimited");
+  const [newModifierStockCount, setNewModifierStockCount] = useState("");
+  const [newModifierMaxLimit, setNewModifierMaxLimit] = useState("");
+  const [newModifierCanSoldSeparately, setNewModifierCanSoldSeparately] = useState("yes");
+
+  const openNewModifierDialog = (groupId: string) => {
+    setNewModifierTargetGroupId(groupId);
+    setNewModifierName("");
+    setNewModifierCategory("");
+    setNewModifierDeliveryEnabled(true);
+    setNewModifierDeliveryPrice("");
+    setNewModifierStockType("unlimited");
+    setNewModifierStockCount("");
+    setNewModifierMaxLimit("");
+    setNewModifierCanSoldSeparately("yes");
+    setNewModifierDialogOpen(true);
+  };
+
+  const handleNewModifierSubmit = () => {
+    if (!newModifierName.trim()) return;
+    const newItem: ModifierGroupItem = {
+      name: newModifierName.trim(),
+      price: newModifierDeliveryPrice ? `R$${newModifierDeliveryPrice}` : "R$0.00",
+      maxQty: newModifierMaxLimit || "-",
+    };
+    setModifierGroups(prev => prev.map(g =>
+      g.id === newModifierTargetGroupId ? { ...g, items: [...g.items, newItem] } : g
+    ));
+    setNewModifierDialogOpen(false);
+  };
+
   useEffect(() => {
     if (existingData) {
       const { item, categoryIndex } = existingData;
