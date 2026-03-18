@@ -66,7 +66,17 @@
     "noCannotBeEmpty": "No puede estar vacío",
     "pleaseSaveFirst": "Please save first.",
     "pleaseEnter": "Please enter",
-    "itemsCount": "items"
+    "itemsCount": "items",
+    "totalSelected": "Total selected",
+    "activate": "Activate",
+    "remove": "Remove",
+    "more": "More",
+    "editActiveTime": "Edit active time",
+    "cancelAvailability": "Cancel availability settings",
+    "editHoursOfSale": "Edit hours of sale",
+    "editCategory": "Edit category",
+    "editPrice": "Edit price",
+    "selected": "Selected"
   },
   "newItem": {
     "back": "Back",

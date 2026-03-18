@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AdminLayout from "@/components/AdminLayout";
 import emptyMenuImage from "@/assets/empty-menu.png";
-import { Search, Plus, Settings2, MoreHorizontal, Clock, List, Pencil, Trash2, Clock4, AlertCircle, Hourglass, Megaphone, Lock, Check, X } from "lucide-react";
+import { Search, Plus, Settings2, MoreHorizontal, Clock, List, Pencil, Trash2, Clock4, AlertCircle, Hourglass, Megaphone, Lock, Check, X, ArrowUp, ChevronDown, Smile } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,51 @@ const MenuListPage = () => {
   const { categories, setCategories, categoryItems, setCategoryItems } = useMenu();
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  // Batch operations state
+  const [batchMode, setBatchMode] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+
+  const enterBatchMode = () => {
+    setBatchMode(true);
+    setSelectedItems(new Set());
+  };
+
+  const exitBatchMode = () => {
+    setBatchMode(false);
+    setSelectedItems(new Set());
+  };
+
+  const toggleItemSelection = (itemId: string) => {
+    setSelectedItems(prev => {
+      const next = new Set(prev);
+      if (next.has(itemId)) next.delete(itemId);
+      else next.add(itemId);
+      return next;
+    });
+  };
+
+  const toggleAllInCategory = (catIdx: number) => {
+    const items = categoryItems[catIdx] || [];
+    const allSelected = items.every(i => selectedItems.has(i.id));
+    setSelectedItems(prev => {
+      const next = new Set(prev);
+      items.forEach(i => {
+        if (allSelected) next.delete(i.id);
+        else next.add(i.id);
+      });
+      return next;
+    });
+  };
+
+  // Get selected count per category
+  const getSelectedCountForCategory = (catIdx: number): number => {
+    const items = categoryItems[catIdx] || [];
+    return items.filter(i => selectedItems.has(i.id)).length;
+  };
+
+  const totalSelected = selectedItems.size;
+  const hasSelection = totalSelected > 0;
   
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingCategoryIndex, setEditingCategoryIndex] = useState<number | null>(null);
@@ -244,10 +290,43 @@ const MenuListPage = () => {
             </Select>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="h-9 gap-2"><Settings2 className="h-4 w-4" />{t("menuList.batchOperations")}</Button>
-            <Button className="h-9 gap-1 bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => navigate("/menu/new")}>
-              <Plus className="h-4 w-4" />{t("menuList.addItem")}
-            </Button>
+            {batchMode ? (
+              <>
+                <span className="text-sm font-semibold" style={{ color: hasSelection ? 'hsl(50, 100%, 50%)' : undefined }}>
+                  {t("menuList.totalSelected")} {totalSelected}
+                </span>
+                <Button variant="outline" size="sm" disabled={!hasSelection} className="h-8 gap-1">
+                  <ArrowUp className="h-3.5 w-3.5" />{t("menuList.activate")}
+                </Button>
+                <Button variant="outline" size="sm" disabled={!hasSelection} className="h-8 gap-1">
+                  <Trash2 className="h-3.5 w-3.5" />{t("menuList.remove")}
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" disabled={!hasSelection} className="h-8 gap-1">
+                      {t("menuList.more")} <ChevronDown className="h-3.5 w-3.5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>{t("menuList.editActiveTime")}</DropdownMenuItem>
+                    <DropdownMenuItem>{t("menuList.cancelAvailability")}</DropdownMenuItem>
+                    <DropdownMenuItem>{t("menuList.editHoursOfSale")}</DropdownMenuItem>
+                    <DropdownMenuItem>{t("menuList.editCategory")}</DropdownMenuItem>
+                    <DropdownMenuItem>{t("menuList.editPrice")}</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <button onClick={exitBatchMode} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+                  <X className="h-4 w-4" />{t("menuList.cancel")}
+                </button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" className="h-9 gap-2" onClick={enterBatchMode}><Settings2 className="h-4 w-4" />{t("menuList.batchOperations")}</Button>
+                <Button className="h-9 gap-1 bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => navigate("/menu/new")}>
+                  <Plus className="h-4 w-4" />{t("menuList.addItem")}
+                </Button>
+              </>
+            )}
           </div>
         </div>
 
@@ -290,9 +369,21 @@ const MenuListPage = () => {
                   }`}
                 >
                   <TruncatedText text={cat.name} className="flex-1 min-w-0 mr-2" />
-                  <span className={`text-xs shrink-0 text-right transition-all group-hover:mr-7 ${selectedCategory === idx ? "text-card/70" : "text-muted-foreground"}`}>
-                    {cat.count}
-                  </span>
+                  {batchMode && getSelectedCountForCategory(idx) > 0 ? (
+                    <span className="text-xs shrink-0 text-right transition-all group-hover:mr-7" style={{ color: 'hsl(50, 100%, 50%)' }}>
+                      {t("menuList.selected")} {getSelectedCountForCategory(idx)}
+                    </span>
+                  ) : (
+                    <span className={`text-xs shrink-0 text-right transition-all group-hover:mr-7 ${selectedCategory === idx ? "text-card/70" : "text-muted-foreground"}`}>
+                      {cat.count}
+                    </span>
+                  )}
+                  {batchMode && selectedCategory === idx && (
+                    <span className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Smile className="h-4 w-4 text-muted-foreground" />
+                    </span>
+                  )}
+                  {!batchMode && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
@@ -314,6 +405,7 @@ const MenuListPage = () => {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
+                  )}
                 </div>
               ))}
             </div>
@@ -334,9 +426,17 @@ const MenuListPage = () => {
             </div>
 
             {/* Table header */}
-            <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] gap-2 border-b border-border px-2 pb-2 text-xs text-muted-foreground">
+            <div className={`grid gap-2 border-b border-border px-2 pb-2 text-xs text-muted-foreground ${batchMode ? "grid-cols-[32px_1fr_100px_80px_70px_30px]" : "grid-cols-[1fr_120px_100px_80px_70px_30px]"}`}>
+              {batchMode && (
+                <div className="flex items-center justify-center">
+                  <Checkbox
+                    checked={(categoryItems[selectedCategory] || []).length > 0 && (categoryItems[selectedCategory] || []).every(i => selectedItems.has(i.id))}
+                    onCheckedChange={() => toggleAllInCategory(selectedCategory)}
+                  />
+                </div>
+              )}
               <span>{t("menuList.title")}</span>
-              <span className="text-right">{t("menuList.delivery")}</span>
+              {!batchMode && <span className="text-right">{t("menuList.delivery")}</span>}
               <span className="text-right">{t("menuList.pickUp")}</span>
               <span className="text-right">{t("menuList.stock")}</span>
               <span className="text-center">{t("menuList.status")}</span>
@@ -356,7 +456,15 @@ const MenuListPage = () => {
                 <div className="divide-y divide-border">
                   {(categoryItems[selectedCategory] || []).map((item) => (
                     <div key={item.id}>
-                      <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-3">
+                      <div className={`grid items-center gap-2 px-2 py-3 ${batchMode ? "grid-cols-[32px_1fr_100px_80px_70px_30px]" : "grid-cols-[1fr_120px_100px_80px_70px_30px]"}`}>
+                        {batchMode && (
+                          <div className="flex items-center justify-center">
+                            <Checkbox
+                              checked={selectedItems.has(item.id)}
+                              onCheckedChange={() => toggleItemSelection(item.id)}
+                            />
+                          </div>
+                        )}
                         <div className="flex items-center gap-3">
                           <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-2xl">{item.image}</div>
                           <div>
@@ -387,7 +495,7 @@ const MenuListPage = () => {
                             )}
                           </div>
                         </div>
-                        {editingPriceItemId === item.id ? (
+                        {!batchMode && (editingPriceItemId === item.id ? (
                           <div ref={priceEditContainerRef} className="flex flex-col items-end">
                             <div className="flex items-center gap-1">
                               <Input
@@ -408,7 +516,7 @@ const MenuListPage = () => {
                           <span className={`cursor-pointer rounded px-2 py-1 text-right text-sm transition-colors hover:bg-secondary ${!item.status ? "text-muted-foreground/50" : ""}`} onClick={() => startEditPrice(item)}>
                             {item.deliveryPrice}
                           </span>
-                        )}
+                        ))}
                         <span className={`text-right text-sm ${!item.status ? "text-muted-foreground/50" : ""}`}>{item.pickupPrice}</span>
                         <span className={`text-right text-sm ${!item.status ? "text-muted-foreground/50" : ""}`}>{item.stock}</span>
                         <div className="flex justify-center" style={{ opacity: !item.status ? 2.5 : 1 }}>
@@ -430,7 +538,8 @@ const MenuListPage = () => {
                       {item.addOns && item.addOns.length > 0 &&
                         item.addOns.map((group, gi) => (
                           <div key={gi} className="border-t border-border bg-secondary/30">
-                            <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-2">
+                            <div className={`grid items-center gap-2 px-2 py-2 ${batchMode ? "grid-cols-[32px_1fr_100px_80px_70px_30px]" : "grid-cols-[1fr_120px_100px_80px_70px_30px]"}`}>
+                              {batchMode && <span />}
                               <span className="pl-4 text-xs font-medium text-muted-foreground">
                                 {group.name}{" "}
                                 {group.required && <span className="text-destructive">({t("menuList.required")})</span>}
@@ -438,7 +547,8 @@ const MenuListPage = () => {
                             </div>
                             {group.items.map((sub, si) => (
                               <div key={si}>
-                                <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-2">
+                                <div className={`grid items-center gap-2 px-2 py-2 ${batchMode ? "grid-cols-[32px_1fr_100px_80px_70px_30px]" : "grid-cols-[1fr_120px_100px_80px_70px_30px]"}`}>
+                                  {batchMode && <span />}
                                   <span className="pl-8 text-sm">{sub.name}</span>
                                   <span className="text-right text-sm">{sub.deliveryPrice}</span>
                                   <span className="text-right text-sm">{sub.pickupPrice}</span>
