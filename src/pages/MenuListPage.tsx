@@ -456,7 +456,15 @@ const MenuListPage = () => {
                 <div className="divide-y divide-border">
                   {(categoryItems[selectedCategory] || []).map((item) => (
                     <div key={item.id}>
-                      <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-3">
+                      <div className={`grid items-center gap-2 px-2 py-3 ${batchMode ? "grid-cols-[32px_1fr_100px_80px_70px_30px]" : "grid-cols-[1fr_120px_100px_80px_70px_30px]"}`}>
+                        {batchMode && (
+                          <div className="flex items-center justify-center">
+                            <Checkbox
+                              checked={selectedItems.has(item.id)}
+                              onCheckedChange={() => toggleItemSelection(item.id)}
+                            />
+                          </div>
+                        )}
                         <div className="flex items-center gap-3">
                           <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-2xl">{item.image}</div>
                           <div>
