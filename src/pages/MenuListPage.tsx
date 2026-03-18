@@ -290,10 +290,43 @@ const MenuListPage = () => {
             </Select>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="h-9 gap-2"><Settings2 className="h-4 w-4" />{t("menuList.batchOperations")}</Button>
-            <Button className="h-9 gap-1 bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => navigate("/menu/new")}>
-              <Plus className="h-4 w-4" />{t("menuList.addItem")}
-            </Button>
+            {batchMode ? (
+              <>
+                <span className="text-sm font-semibold" style={{ color: hasSelection ? 'hsl(50, 100%, 50%)' : undefined }}>
+                  {t("menuList.totalSelected")} {totalSelected}
+                </span>
+                <Button variant="outline" size="sm" disabled={!hasSelection} className="h-8 gap-1">
+                  <ArrowUp className="h-3.5 w-3.5" />{t("menuList.activate")}
+                </Button>
+                <Button variant="outline" size="sm" disabled={!hasSelection} className="h-8 gap-1">
+                  <Trash2 className="h-3.5 w-3.5" />{t("menuList.remove")}
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" disabled={!hasSelection} className="h-8 gap-1">
+                      {t("menuList.more")} <ChevronDown className="h-3.5 w-3.5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>{t("menuList.editActiveTime")}</DropdownMenuItem>
+                    <DropdownMenuItem>{t("menuList.cancelAvailability")}</DropdownMenuItem>
+                    <DropdownMenuItem>{t("menuList.editHoursOfSale")}</DropdownMenuItem>
+                    <DropdownMenuItem>{t("menuList.editCategory")}</DropdownMenuItem>
+                    <DropdownMenuItem>{t("menuList.editPrice")}</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <button onClick={exitBatchMode} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+                  <X className="h-4 w-4" />{t("menuList.cancel")}
+                </button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" className="h-9 gap-2" onClick={enterBatchMode}><Settings2 className="h-4 w-4" />{t("menuList.batchOperations")}</Button>
+                <Button className="h-9 gap-1 bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => navigate("/menu/new")}>
+                  <Plus className="h-4 w-4" />{t("menuList.addItem")}
+                </Button>
+              </>
+            )}
           </div>
         </div>
 
