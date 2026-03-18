@@ -425,21 +425,30 @@ const NewItemPage = () => {
             <label className="mb-2 block text-sm font-medium">{t("newItem.modificationGroup")}</label>
 
             {/* Modifier group cards */}
-            {modifierGroups.map((group, groupIdx) => (
-              <div key={group.id} className="mb-4 rounded-lg border-2 border-[hsl(40,100%,50%)] bg-card">
+            {modifierGroups.map((group, groupIdx) => {
+              const borderClass = group.status === 'error' ? 'border-[hsl(340,82%,52%)]' : group.status === 'saved' ? 'border-border' : 'border-[hsl(40,100%,50%)]';
+              const badgeBg = group.status === 'saved' ? 'bg-[hsl(142,71%,45%)]' : 'bg-[hsl(48,96%,53%)]';
+              const badgeText = group.status === 'saved' ? t("newItem.saved") : t("newItem.unsaved");
+              const isDragDisabled = modifierGroups.length <= 1;
+              const minVal = getMinValue(group.min);
+              const reqDisabled = isRequiredDisabled(group.min, group.max);
+              const reqForced = isRequiredForced(group.min);
+
+              return (
+              <div key={group.id} className={`mb-4 rounded-lg border-2 ${borderClass} bg-card`}>
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-3 border-b border-border">
                   <div className="flex items-center gap-2">
-                    <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab" />
+                    <GripVertical className={`h-5 w-5 ${isDragDisabled ? 'text-muted-foreground/30 cursor-not-allowed' : 'text-muted-foreground cursor-grab hover:text-foreground'}`} />
                     <span className="font-semibold italic">{group.name || t("newItem.newModifier")}</span>
-                    <Badge className="bg-[hsl(48,96%,53%)] text-foreground hover:bg-[hsl(48,96%,45%)] text-xs">{t("newItem.unsaved")}</Badge>
+                    <Badge className={`${badgeBg} text-foreground hover:opacity-90 text-xs`}>{badgeText}</Badge>
                     <span className="text-sm text-muted-foreground">
                       {group.items.length} {t("newItem.modifierCount")} · {group.min}-{group.max} {t("newItem.options")}
                     </span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <button className="p-1.5 rounded hover:bg-secondary"><Copy className="h-4 w-4 text-muted-foreground" /></button>
-                    <button onClick={() => removeModifierGroup(group.id)} className="p-1.5 rounded hover:bg-secondary"><Trash2 className="h-4 w-4 text-muted-foreground" /></button>
+                    <button className="p-1.5 rounded hover:bg-secondary"><Copy className="h-4 w-4 text-muted-foreground hover:text-foreground" /></button>
+                    <button onClick={() => removeModifierGroup(group.id)} className="p-1.5 rounded hover:bg-secondary"><Trash2 className="h-4 w-4 text-muted-foreground hover:text-foreground" /></button>
                     <div className="w-px h-5 bg-border mx-1" />
                     <button onClick={() => toggleModifierCollapse(group.id)} className="p-1.5 rounded hover:bg-secondary">
                       {group.collapsed ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronUp className="h-4 w-4 text-muted-foreground" />}
@@ -454,7 +463,15 @@ const NewItemPage = () => {
                     <div className="grid grid-cols-[1fr_1fr_auto_auto] gap-3 items-end">
                       <div>
                         <label className="mb-1 block text-xs text-muted-foreground">{t("newItem.modifierName")}</label>
-                        <Input placeholder={t("newItem.namePlaceholder")} value={group.name} onChange={(e) => updateModifierGroup(group.id, { name: e.target.value })} />
+                        <Input
+                          placeholder={t("newItem.namePlaceholder")}
+                          value={group.name}
+                          onChange={(e) => updateModifierGroup(group.id, { name: e.target.value })}
+                          className={group.status === 'error' && !group.name.trim() ? 'border-destructive' : ''}
+                        />
+                        {group.status === 'error' && !group.name.trim() && (
+                          <p className="mt-1 text-xs text-destructive">{t("newItem.modifierNameRequired")}</p>
+                        )}
                       </div>
                       <div>
                         <label className="mb-1 block text-xs text-muted-foreground">{t("newItem.customModifierGroupId")}</label>
@@ -462,13 +479,27 @@ const NewItemPage = () => {
                       </div>
                       <div>
                         <label className="mb-1 block text-xs text-muted-foreground">MIN</label>
-                        <Input className="w-16" value={group.min} onChange={(e) => updateModifierGroup(group.id, { min: e.target.value })} />
+                        <Input className="w-16" value={group.min} onChange={(e) => {
+                          const newMin = e.target.value;
+                          const newMinVal = parseInt(newMin) || 0;
+                          const updates: Partial<ModifierGroup> = { min: newMin };
+                          if (newMinVal === 0) updates.required = false;
+                          else if (newMinVal > 0 && newMinVal !== getMaxValue(group.max)) updates.required = true;
+                          updateModifierGroup(group.id, updates);
+                        }} />
                       </div>
                       <div className="flex items-end gap-1">
                         <span className="pb-2 text-muted-foreground">-</span>
                         <div>
                           <label className="mb-1 block text-xs text-muted-foreground">MAX</label>
-                          <Input className="w-16" value={group.max} onChange={(e) => updateModifierGroup(group.id, { max: e.target.value })} />
+                          <Input className="w-16" value={group.max} onChange={(e) => {
+                            const newMax = e.target.value;
+                            const newMaxVal = parseInt(newMax) || 0;
+                            const updates: Partial<ModifierGroup> = { max: newMax };
+                            if (minVal === 0) updates.required = false;
+                            else if (minVal > 0 && minVal !== newMaxVal) updates.required = true;
+                            updateModifierGroup(group.id, updates);
+                          }} />
                         </div>
                       </div>
                     </div>
@@ -479,8 +510,14 @@ const NewItemPage = () => {
                         <input type="checkbox" className="rounded border-border" checked={group.allowMultiple} onChange={(e) => updateModifierGroup(group.id, { allowMultiple: e.target.checked })} />
                         {t("newItem.customerCanAddMultiple")}
                       </label>
-                      <label className="flex items-center gap-2 text-sm">
-                        <input type="checkbox" className="rounded border-border" checked={group.required} onChange={(e) => updateModifierGroup(group.id, { required: e.target.checked })} />
+                      <label className={`flex items-center gap-2 text-sm ${reqDisabled ? 'opacity-50' : ''}`}>
+                        <input
+                          type="checkbox"
+                          className="rounded border-border"
+                          checked={reqDisabled ? reqForced : group.required}
+                          disabled={reqDisabled}
+                          onChange={(e) => updateModifierGroup(group.id, { required: e.target.checked })}
+                        />
                         {t("newItem.requiredToSelect")}
                       </label>
                     </div>
@@ -519,7 +556,7 @@ const NewItemPage = () => {
 
                     {/* Save button */}
                     <div className="flex justify-end">
-                      <Button className="bg-[hsl(48,96%,53%)] text-foreground hover:bg-[hsl(48,96%,45%)] gap-1">
+                      <Button onClick={() => saveModifierGroup(group.id)} className="bg-[hsl(48,96%,53%)] text-foreground hover:bg-[hsl(48,96%,45%)] gap-1">
                         <Save className="h-4 w-4" />
                         {t("newItem.saveChanges")}
                       </Button>
@@ -527,7 +564,8 @@ const NewItemPage = () => {
                   </div>
                 )}
               </div>
-            ))}
+              );
+            })}
 
             {/* Add group button with hover dropdown */}
             <div className="relative group">
