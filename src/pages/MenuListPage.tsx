@@ -495,7 +495,7 @@ const MenuListPage = () => {
                             )}
                           </div>
                         </div>
-                        {editingPriceItemId === item.id ? (
+                        {!batchMode && (editingPriceItemId === item.id ? (
                           <div ref={priceEditContainerRef} className="flex flex-col items-end">
                             <div className="flex items-center gap-1">
                               <Input
@@ -516,7 +516,7 @@ const MenuListPage = () => {
                           <span className={`cursor-pointer rounded px-2 py-1 text-right text-sm transition-colors hover:bg-secondary ${!item.status ? "text-muted-foreground/50" : ""}`} onClick={() => startEditPrice(item)}>
                             {item.deliveryPrice}
                           </span>
-                        )}
+                        ))}
                         <span className={`text-right text-sm ${!item.status ? "text-muted-foreground/50" : ""}`}>{item.pickupPrice}</span>
                         <span className={`text-right text-sm ${!item.status ? "text-muted-foreground/50" : ""}`}>{item.stock}</span>
                         <div className="flex justify-center" style={{ opacity: !item.status ? 2.5 : 1 }}>
