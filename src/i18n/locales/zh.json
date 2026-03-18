@@ -111,6 +111,8 @@
     "copyOtherItemGroup": "复制其他菜品的组",
     "newModifier": "新建选项组",
     "unsaved": "未保存",
+    "saved": "已保存",
+    "modifierNameRequired": "选项组名称为必填项",
     "modifierCount": "个选项",
     "options": "个选项",
     "modifierName": "选项组名称",

@@ -111,6 +111,8 @@
     "copyOtherItemGroup": "Copiar grupo de outro item",
     "newModifier": "Novo Modificador",
     "unsaved": "Não salvo",
+    "saved": "Salvo",
+    "modifierNameRequired": "O nome do modificador é obrigatório",
     "modifierCount": "modificador(es)",
     "options": "opções",
     "modifierName": "Nome do Modificador",
