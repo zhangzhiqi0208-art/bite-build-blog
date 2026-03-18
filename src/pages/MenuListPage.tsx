@@ -369,9 +369,21 @@ const MenuListPage = () => {
                   }`}
                 >
                   <TruncatedText text={cat.name} className="flex-1 min-w-0 mr-2" />
-                  <span className={`text-xs shrink-0 text-right transition-all group-hover:mr-7 ${selectedCategory === idx ? "text-card/70" : "text-muted-foreground"}`}>
-                    {cat.count}
-                  </span>
+                  {batchMode && getSelectedCountForCategory(idx) > 0 ? (
+                    <span className="text-xs shrink-0 text-right transition-all group-hover:mr-7" style={{ color: 'hsl(50, 100%, 50%)' }}>
+                      {t("menuList.selected")} {getSelectedCountForCategory(idx)}
+                    </span>
+                  ) : (
+                    <span className={`text-xs shrink-0 text-right transition-all group-hover:mr-7 ${selectedCategory === idx ? "text-card/70" : "text-muted-foreground"}`}>
+                      {cat.count}
+                    </span>
+                  )}
+                  {batchMode && selectedCategory === idx && (
+                    <span className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Smile className="h-4 w-4 text-muted-foreground" />
+                    </span>
+                  )}
+                  {!batchMode && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
@@ -393,6 +405,7 @@ const MenuListPage = () => {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
+                  )}
                 </div>
               ))}
             </div>
@@ -413,9 +426,17 @@ const MenuListPage = () => {
             </div>
 
             {/* Table header */}
-            <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] gap-2 border-b border-border px-2 pb-2 text-xs text-muted-foreground">
+            <div className={`grid gap-2 border-b border-border px-2 pb-2 text-xs text-muted-foreground ${batchMode ? "grid-cols-[32px_1fr_100px_80px_70px_30px]" : "grid-cols-[1fr_120px_100px_80px_70px_30px]"}`}>
+              {batchMode && (
+                <div className="flex items-center justify-center">
+                  <Checkbox
+                    checked={(categoryItems[selectedCategory] || []).length > 0 && (categoryItems[selectedCategory] || []).every(i => selectedItems.has(i.id))}
+                    onCheckedChange={() => toggleAllInCategory(selectedCategory)}
+                  />
+                </div>
+              )}
               <span>{t("menuList.title")}</span>
-              <span className="text-right">{t("menuList.delivery")}</span>
+              {!batchMode && <span className="text-right">{t("menuList.delivery")}</span>}
               <span className="text-right">{t("menuList.pickUp")}</span>
               <span className="text-right">{t("menuList.stock")}</span>
               <span className="text-center">{t("menuList.status")}</span>
