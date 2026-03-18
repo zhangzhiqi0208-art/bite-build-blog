@@ -72,6 +72,7 @@ const NewItemPage = () => {
     setModifierGroups(prev => [...prev, {
       id: `mg-${Date.now()}`, name: "", customId: "", min: "1", max: "1",
       allowMultiple: false, required: false, collapsed: false, items: [],
+      status: 'unsaved' as const,
     }]);
   };
 
