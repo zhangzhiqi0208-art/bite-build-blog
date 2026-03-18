@@ -66,7 +66,17 @@
     "noCannotBeEmpty": "不能为空",
     "pleaseSaveFirst": "请先保存。",
     "pleaseEnter": "请输入",
-    "itemsCount": "个菜品"
+    "itemsCount": "个菜品",
+    "totalSelected": "已选",
+    "activate": "上架",
+    "remove": "删除",
+    "more": "更多",
+    "editActiveTime": "编辑上架时间",
+    "cancelAvailability": "取消可用性设置",
+    "editHoursOfSale": "编辑营业时段",
+    "editCategory": "编辑分类",
+    "editPrice": "编辑价格",
+    "selected": "已选"
   },
   "newItem": {
     "back": "返回",
