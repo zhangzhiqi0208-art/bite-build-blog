@@ -33,6 +33,51 @@ const MenuListPage = () => {
   const { categories, setCategories, categoryItems, setCategoryItems } = useMenu();
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  // Batch operations state
+  const [batchMode, setBatchMode] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+
+  const enterBatchMode = () => {
+    setBatchMode(true);
+    setSelectedItems(new Set());
+  };
+
+  const exitBatchMode = () => {
+    setBatchMode(false);
+    setSelectedItems(new Set());
+  };
+
+  const toggleItemSelection = (itemId: string) => {
+    setSelectedItems(prev => {
+      const next = new Set(prev);
+      if (next.has(itemId)) next.delete(itemId);
+      else next.add(itemId);
+      return next;
+    });
+  };
+
+  const toggleAllInCategory = (catIdx: number) => {
+    const items = categoryItems[catIdx] || [];
+    const allSelected = items.every(i => selectedItems.has(i.id));
+    setSelectedItems(prev => {
+      const next = new Set(prev);
+      items.forEach(i => {
+        if (allSelected) next.delete(i.id);
+        else next.add(i.id);
+      });
+      return next;
+    });
+  };
+
+  // Get selected count per category
+  const getSelectedCountForCategory = (catIdx: number): number => {
+    const items = categoryItems[catIdx] || [];
+    return items.filter(i => selectedItems.has(i.id)).length;
+  };
+
+  const totalSelected = selectedItems.size;
+  const hasSelection = totalSelected > 0;
   
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingCategoryIndex, setEditingCategoryIndex] = useState<number | null>(null);
