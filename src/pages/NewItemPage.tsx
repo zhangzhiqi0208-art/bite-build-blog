@@ -85,8 +85,25 @@ const NewItemPage = () => {
   };
 
   const updateModifierGroup = (id: string, updates: Partial<ModifierGroup>) => {
-    setModifierGroups(prev => prev.map(g => g.id === id ? { ...g, ...updates } : g));
+    setModifierGroups(prev => prev.map(g => g.id === id ? { ...g, ...updates, ...(updates.status ? {} : { status: 'unsaved' as const }) } : g));
   };
+
+  const saveModifierGroup = (id: string) => {
+    setModifierGroups(prev => prev.map(g => {
+      if (g.id !== id) return g;
+      if (!g.name.trim()) return { ...g, status: 'error' as const };
+      return { ...g, status: 'saved' as const };
+    }));
+  };
+
+  const getMinValue = (min: string) => parseInt(min) || 0;
+  const getMaxValue = (max: string) => parseInt(max) || 0;
+  const isRequiredDisabled = (min: string, max: string) => {
+    const minVal = getMinValue(min);
+    const maxVal = getMaxValue(max);
+    return minVal !== maxVal; // disabled when min !== max
+  };
+  const isRequiredForced = (min: string) => getMinValue(min) > 0;
 
   // New modifier dialog state
   const [newModifierDialogOpen, setNewModifierDialogOpen] = useState(false);
