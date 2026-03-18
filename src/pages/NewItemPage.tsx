@@ -63,6 +63,7 @@ const NewItemPage = () => {
     required: boolean;
     collapsed: boolean;
     items: ModifierGroupItem[];
+    status: 'unsaved' | 'error' | 'saved';
   }
 
   const [modifierGroups, setModifierGroups] = useState<ModifierGroup[]>([]);
