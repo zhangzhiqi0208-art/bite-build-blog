@@ -538,7 +538,8 @@ const MenuListPage = () => {
                       {item.addOns && item.addOns.length > 0 &&
                         item.addOns.map((group, gi) => (
                           <div key={gi} className="border-t border-border bg-secondary/30">
-                            <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-2">
+                            <div className={`grid items-center gap-2 px-2 py-2 ${batchMode ? "grid-cols-[32px_1fr_100px_80px_70px_30px]" : "grid-cols-[1fr_120px_100px_80px_70px_30px]"}`}>
+                              {batchMode && <span />}
                               <span className="pl-4 text-xs font-medium text-muted-foreground">
                                 {group.name}{" "}
                                 {group.required && <span className="text-destructive">({t("menuList.required")})</span>}
@@ -546,7 +547,8 @@ const MenuListPage = () => {
                             </div>
                             {group.items.map((sub, si) => (
                               <div key={si}>
-                                <div className="grid grid-cols-[1fr_120px_100px_80px_70px_30px] items-center gap-2 px-2 py-2">
+                                <div className={`grid items-center gap-2 px-2 py-2 ${batchMode ? "grid-cols-[32px_1fr_100px_80px_70px_30px]" : "grid-cols-[1fr_120px_100px_80px_70px_30px]"}`}>
+                                  {batchMode && <span />}
                                   <span className="pl-8 text-sm">{sub.name}</span>
                                   <span className="text-right text-sm">{sub.deliveryPrice}</span>
                                   <span className="text-right text-sm">{sub.pickupPrice}</span>
