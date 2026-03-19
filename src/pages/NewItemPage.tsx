@@ -32,7 +32,7 @@ interface SubItemRowProps {
   onDragEnd: () => void;
 }
 
-const SubItemRow = ({ item, totalItems, onUpdate, onDelete, onDragStart, onDragOver, onDragEnd }: SubItemRowProps) => {
+const SubItemRow = ({ item, totalItems, onUpdate, onDelete, onEdit, onDragStart, onDragOver, onDragEnd }: SubItemRowProps) => {
   const [hovered, setHovered] = useState(false);
   const [editingField, setEditingField] = useState<'name' | 'price' | 'maxQty' | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -92,7 +92,12 @@ const SubItemRow = ({ item, totalItems, onUpdate, onDelete, onDragStart, onDragO
           onKeyDown={handleKeyDown}
         />
       ) : (
-        <span className="cursor-pointer truncate" onClick={() => startEdit('name')}>{item.name}</span>
+        <span
+          className="cursor-pointer truncate rounded px-1.5 py-0.5 hover:bg-accent transition-colors"
+          onClick={() => startEdit('name')}
+        >
+          {item.name}
+        </span>
       )}
 
       {/* Price */}
@@ -109,7 +114,12 @@ const SubItemRow = ({ item, totalItems, onUpdate, onDelete, onDragStart, onDragO
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">R$</span>
         </div>
       ) : (
-        <span className="text-center cursor-pointer" onClick={() => startEdit('price')}>{item.price}</span>
+        <span
+          className="text-center cursor-pointer rounded px-1.5 py-0.5 hover:bg-accent transition-colors"
+          onClick={() => startEdit('price')}
+        >
+          {item.price}
+        </span>
       )}
 
       {/* Max QTY */}
@@ -126,12 +136,17 @@ const SubItemRow = ({ item, totalItems, onUpdate, onDelete, onDragStart, onDragO
           <span className="text-[10px] text-muted-foreground">0=unlimited</span>
         </div>
       ) : (
-        <span className="text-center cursor-pointer" onClick={() => startEdit('maxQty')}>{item.maxQty}</span>
+        <span
+          className="text-center cursor-pointer rounded px-1.5 py-0.5 hover:bg-accent transition-colors"
+          onClick={() => startEdit('maxQty')}
+        >
+          {item.maxQty}
+        </span>
       )}
 
       {/* Actions - visible on hover */}
       <div className={`flex items-center gap-1 justify-end transition-opacity ${hovered ? 'opacity-100' : 'opacity-0'}`}>
-        <button onClick={() => startEdit('name')} className="p-1 rounded hover:bg-secondary">
+        <button onClick={onEdit} className="p-1 rounded hover:bg-secondary">
           <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
         </button>
         <button onClick={onDelete} className="p-1 rounded hover:bg-secondary">
