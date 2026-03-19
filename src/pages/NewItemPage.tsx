@@ -26,12 +26,13 @@ interface SubItemRowProps {
   totalItems: number;
   onUpdate: (field: 'name' | 'price' | 'maxQty', value: string) => void;
   onDelete: () => void;
+  onEdit: () => void;
   onDragStart: () => void;
   onDragOver: (e: React.DragEvent) => void;
   onDragEnd: () => void;
 }
 
-const SubItemRow = ({ item, totalItems, onUpdate, onDelete, onDragStart, onDragOver, onDragEnd }: SubItemRowProps) => {
+const SubItemRow = ({ item, totalItems, onUpdate, onDelete, onEdit, onDragStart, onDragOver, onDragEnd }: SubItemRowProps) => {
   const [hovered, setHovered] = useState(false);
   const [editingField, setEditingField] = useState<'name' | 'price' | 'maxQty' | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -91,7 +92,12 @@ const SubItemRow = ({ item, totalItems, onUpdate, onDelete, onDragStart, onDragO
           onKeyDown={handleKeyDown}
         />
       ) : (
-        <span className="cursor-pointer truncate" onClick={() => startEdit('name')}>{item.name}</span>
+        <span
+          className="cursor-pointer truncate rounded px-1.5 py-0.5 hover:bg-accent transition-colors"
+          onClick={() => startEdit('name')}
+        >
+          {item.name}
+        </span>
       )}
 
       {/* Price */}
@@ -108,7 +114,12 @@ const SubItemRow = ({ item, totalItems, onUpdate, onDelete, onDragStart, onDragO
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">R$</span>
         </div>
       ) : (
-        <span className="text-center cursor-pointer" onClick={() => startEdit('price')}>{item.price}</span>
+        <span
+          className="text-center cursor-pointer rounded px-1.5 py-0.5 hover:bg-accent transition-colors"
+          onClick={() => startEdit('price')}
+        >
+          {item.price}
+        </span>
       )}
 
       {/* Max QTY */}
@@ -125,12 +136,17 @@ const SubItemRow = ({ item, totalItems, onUpdate, onDelete, onDragStart, onDragO
           <span className="text-[10px] text-muted-foreground">0=unlimited</span>
         </div>
       ) : (
-        <span className="text-center cursor-pointer" onClick={() => startEdit('maxQty')}>{item.maxQty}</span>
+        <span
+          className="text-center cursor-pointer rounded px-1.5 py-0.5 hover:bg-accent transition-colors"
+          onClick={() => startEdit('maxQty')}
+        >
+          {item.maxQty}
+        </span>
       )}
 
       {/* Actions - visible on hover */}
       <div className={`flex items-center gap-1 justify-end transition-opacity ${hovered ? 'opacity-100' : 'opacity-0'}`}>
-        <button onClick={() => startEdit('name')} className="p-1 rounded hover:bg-secondary">
+        <button onClick={onEdit} className="p-1 rounded hover:bg-secondary">
           <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
         </button>
         <button onClick={onDelete} className="p-1 rounded hover:bg-secondary">
@@ -233,6 +249,7 @@ const NewItemPage = () => {
   // New modifier dialog state
   const [newModifierDialogOpen, setNewModifierDialogOpen] = useState(false);
   const [newModifierTargetGroupId, setNewModifierTargetGroupId] = useState<string>("");
+  const [newModifierEditIdx, setNewModifierEditIdx] = useState<number | null>(null); // null = create, number = edit index
   const [newModifierName, setNewModifierName] = useState("");
   const [newModifierCategory, setNewModifierCategory] = useState("");
   const [newModifierDeliveryEnabled, setNewModifierDeliveryEnabled] = useState(true);
@@ -244,6 +261,7 @@ const NewItemPage = () => {
 
   const openNewModifierDialog = (groupId: string) => {
     setNewModifierTargetGroupId(groupId);
+    setNewModifierEditIdx(null);
     setNewModifierName("");
     setNewModifierCategory("");
     setNewModifierDeliveryEnabled(true);
@@ -255,16 +273,44 @@ const NewItemPage = () => {
     setNewModifierDialogOpen(true);
   };
 
+  const openEditModifierDialog = (groupId: string, idx: number) => {
+    const group = modifierGroups.find(g => g.id === groupId);
+    if (!group) return;
+    const item = group.items[idx];
+    setNewModifierTargetGroupId(groupId);
+    setNewModifierEditIdx(idx);
+    setNewModifierName(item.name);
+    setNewModifierCategory("");
+    setNewModifierDeliveryEnabled(true);
+    setNewModifierDeliveryPrice(item.price.replace('R$', ''));
+    setNewModifierStockType(item.maxQty === 'unlimited' || item.maxQty === '-' ? 'unlimited' : 'custom');
+    setNewModifierStockCount(item.maxQty === 'unlimited' || item.maxQty === '-' ? '' : item.maxQty);
+    setNewModifierMaxLimit(item.maxQty === 'unlimited' || item.maxQty === '-' ? '' : item.maxQty);
+    setNewModifierCanSoldSeparately("yes");
+    setNewModifierDialogOpen(true);
+  };
+
   const handleNewModifierSubmit = () => {
     if (!newModifierName.trim()) return;
-    const newItem: ModifierGroupItem = {
+    const modItem: ModifierGroupItem = {
       name: newModifierName.trim(),
       price: newModifierDeliveryPrice ? `R$${newModifierDeliveryPrice}` : "R$0.00",
       maxQty: newModifierMaxLimit || "-",
     };
-    setModifierGroups(prev => prev.map(g =>
-      g.id === newModifierTargetGroupId ? { ...g, items: [...g.items, newItem] } : g
-    ));
+    if (newModifierEditIdx !== null) {
+      // Edit existing
+      setModifierGroups(prev => prev.map(g => {
+        if (g.id !== newModifierTargetGroupId) return g;
+        const newItems = [...g.items];
+        newItems[newModifierEditIdx] = modItem;
+        return { ...g, items: newItems };
+      }));
+    } else {
+      // Create new
+      setModifierGroups(prev => prev.map(g =>
+        g.id === newModifierTargetGroupId ? { ...g, items: [...g.items, modItem] } : g
+      ));
+    }
     setNewModifierDialogOpen(false);
   };
 
@@ -675,6 +721,7 @@ const NewItemPage = () => {
                                 return { ...g, items: newItems };
                               }));
                             }}
+                            onEdit={() => openEditModifierDialog(group.id, idx)}
                             onDelete={() => {
                               setModifierGroups(prev => prev.map(g => {
                                 if (g.id !== group.id) return g;
@@ -820,7 +867,7 @@ const NewItemPage = () => {
       <Dialog open={newModifierDialogOpen} onOpenChange={setNewModifierDialogOpen}>
         <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t("newItem.createSubItem")}</DialogTitle>
+            <DialogTitle>{newModifierEditIdx !== null ? t("newItem.editItem") : t("newItem.createSubItem")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-5 pt-2">
             {/* Name */}
