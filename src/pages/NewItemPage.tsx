@@ -526,20 +526,54 @@ const NewItemPage = () => {
 
                     {/* Items table */}
                     <div className="rounded-lg bg-secondary/50 overflow-hidden">
-                      <div className="grid grid-cols-3 px-4 py-2 text-sm font-medium text-muted-foreground bg-secondary">
+                      <div className="grid grid-cols-[24px_24px_1fr_100px_100px_60px] gap-2 items-center px-4 py-2 text-sm font-medium text-muted-foreground bg-secondary">
+                        <span></span>
+                        <span></span>
                         <span>{t("newItem.itemNameCol")}</span>
                         <span className="text-center">{t("newItem.priceCol")}</span>
                         <span className="text-center">Max QTY</span>
+                        <span></span>
                       </div>
                       {group.items.length === 0 ? (
                         <div className="py-8 text-center text-sm text-muted-foreground">{t("newItem.pleaseLinkSubItems")}</div>
                       ) : (
                         group.items.map((item, idx) => (
-                          <div key={idx} className="grid grid-cols-3 px-4 py-2 border-t border-border text-sm">
-                            <span>{item.name}</span>
-                            <span className="text-center">{item.price}</span>
-                            <span className="text-center">{item.maxQty}</span>
-                          </div>
+                          <SubItemRow
+                            key={idx}
+                            item={item}
+                            idx={idx}
+                            groupId={group.id}
+                            totalItems={group.items.length}
+                            onUpdate={(field, value) => {
+                              setModifierGroups(prev => prev.map(g => {
+                                if (g.id !== group.id) return g;
+                                const newItems = [...g.items];
+                                newItems[idx] = { ...newItems[idx], [field]: value };
+                                return { ...g, items: newItems };
+                              }));
+                            }}
+                            onDelete={() => {
+                              setModifierGroups(prev => prev.map(g => {
+                                if (g.id !== group.id) return g;
+                                return { ...g, items: g.items.filter((_, i) => i !== idx) };
+                              }));
+                            }}
+                            onDragStart={() => setDragItem({ groupId: group.id, idx })}
+                            onDragOver={(e) => {
+                              e.preventDefault();
+                              if (dragItem && dragItem.groupId === group.id && dragItem.idx !== idx) {
+                                setModifierGroups(prev => prev.map(g => {
+                                  if (g.id !== group.id) return g;
+                                  const newItems = [...g.items];
+                                  const [moved] = newItems.splice(dragItem.idx, 1);
+                                  newItems.splice(idx, 0, moved);
+                                  setDragItem({ groupId: group.id, idx });
+                                  return { ...g, items: newItems };
+                                }));
+                              }
+                            }}
+                            onDragEnd={() => setDragItem(null)}
+                          />
                         ))
                       )}
                     </div>
