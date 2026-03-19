@@ -249,6 +249,7 @@ const NewItemPage = () => {
   // New modifier dialog state
   const [newModifierDialogOpen, setNewModifierDialogOpen] = useState(false);
   const [newModifierTargetGroupId, setNewModifierTargetGroupId] = useState<string>("");
+  const [newModifierEditIdx, setNewModifierEditIdx] = useState<number | null>(null); // null = create, number = edit index
   const [newModifierName, setNewModifierName] = useState("");
   const [newModifierCategory, setNewModifierCategory] = useState("");
   const [newModifierDeliveryEnabled, setNewModifierDeliveryEnabled] = useState(true);
@@ -260,6 +261,7 @@ const NewItemPage = () => {
 
   const openNewModifierDialog = (groupId: string) => {
     setNewModifierTargetGroupId(groupId);
+    setNewModifierEditIdx(null);
     setNewModifierName("");
     setNewModifierCategory("");
     setNewModifierDeliveryEnabled(true);
@@ -271,16 +273,44 @@ const NewItemPage = () => {
     setNewModifierDialogOpen(true);
   };
 
+  const openEditModifierDialog = (groupId: string, idx: number) => {
+    const group = modifierGroups.find(g => g.id === groupId);
+    if (!group) return;
+    const item = group.items[idx];
+    setNewModifierTargetGroupId(groupId);
+    setNewModifierEditIdx(idx);
+    setNewModifierName(item.name);
+    setNewModifierCategory("");
+    setNewModifierDeliveryEnabled(true);
+    setNewModifierDeliveryPrice(item.price.replace('R$', ''));
+    setNewModifierStockType(item.maxQty === 'unlimited' || item.maxQty === '-' ? 'unlimited' : 'custom');
+    setNewModifierStockCount(item.maxQty === 'unlimited' || item.maxQty === '-' ? '' : item.maxQty);
+    setNewModifierMaxLimit(item.maxQty === 'unlimited' || item.maxQty === '-' ? '' : item.maxQty);
+    setNewModifierCanSoldSeparately("yes");
+    setNewModifierDialogOpen(true);
+  };
+
   const handleNewModifierSubmit = () => {
     if (!newModifierName.trim()) return;
-    const newItem: ModifierGroupItem = {
+    const modItem: ModifierGroupItem = {
       name: newModifierName.trim(),
       price: newModifierDeliveryPrice ? `R$${newModifierDeliveryPrice}` : "R$0.00",
       maxQty: newModifierMaxLimit || "-",
     };
-    setModifierGroups(prev => prev.map(g =>
-      g.id === newModifierTargetGroupId ? { ...g, items: [...g.items, newItem] } : g
-    ));
+    if (newModifierEditIdx !== null) {
+      // Edit existing
+      setModifierGroups(prev => prev.map(g => {
+        if (g.id !== newModifierTargetGroupId) return g;
+        const newItems = [...g.items];
+        newItems[newModifierEditIdx] = modItem;
+        return { ...g, items: newItems };
+      }));
+    } else {
+      // Create new
+      setModifierGroups(prev => prev.map(g =>
+        g.id === newModifierTargetGroupId ? { ...g, items: [...g.items, modItem] } : g
+      ));
+    }
     setNewModifierDialogOpen(false);
   };
 
