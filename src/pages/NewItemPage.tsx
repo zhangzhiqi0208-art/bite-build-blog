@@ -19,6 +19,128 @@ import { toast } from "@/hooks/use-toast";
 
 const allergens = ["Diary", "Eggs", "Fish", "Diary", "Eggs", "Fish", "Diary", "Eggs", "Fish", "Diary", "Eggs", "Fish"];
 
+interface SubItemRowProps {
+  item: { name: string; price: string; maxQty: string };
+  idx: number;
+  groupId: string;
+  totalItems: number;
+  onUpdate: (field: 'name' | 'price' | 'maxQty', value: string) => void;
+  onDelete: () => void;
+  onDragStart: () => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDragEnd: () => void;
+}
+
+const SubItemRow = ({ item, totalItems, onUpdate, onDelete, onDragStart, onDragOver, onDragEnd }: SubItemRowProps) => {
+  const [hovered, setHovered] = useState(false);
+  const [editingField, setEditingField] = useState<'name' | 'price' | 'maxQty' | null>(null);
+  const [editValue, setEditValue] = useState("");
+
+  const startEdit = (field: 'name' | 'price' | 'maxQty') => {
+    setEditingField(field);
+    if (field === 'price') {
+      setEditValue(item.price.replace('R$', ''));
+    } else if (field === 'maxQty') {
+      setEditValue(item.maxQty === 'unlimited' || item.maxQty === '-' ? '' : item.maxQty);
+    } else {
+      setEditValue(item.name);
+    }
+  };
+
+  const commitEdit = () => {
+    if (!editingField) return;
+    if (editingField === 'name' && editValue.trim()) {
+      onUpdate('name', editValue.trim());
+    } else if (editingField === 'price') {
+      onUpdate('price', editValue ? `R$${editValue}` : item.price);
+    } else if (editingField === 'maxQty') {
+      const val = editValue.trim();
+      onUpdate('maxQty', !val || val === '0' ? 'unlimited' : val);
+    }
+    setEditingField(null);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') commitEdit();
+    if (e.key === 'Escape') setEditingField(null);
+  };
+
+  return (
+    <div
+      className="grid grid-cols-[24px_24px_1fr_100px_100px_60px] gap-2 items-center px-4 py-2 border-t border-border text-sm"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      draggable
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDragEnd={onDragEnd}
+    >
+      <GripVertical className={`h-4 w-4 cursor-grab ${totalItems <= 1 ? 'text-muted-foreground/30' : 'text-muted-foreground'}`} />
+      <div className="h-6 w-6 rounded bg-muted flex items-center justify-center">
+        <Mail className="h-3 w-3 text-muted-foreground" />
+      </div>
+
+      {/* Name */}
+      {editingField === 'name' ? (
+        <Input
+          autoFocus
+          className="h-7 text-sm"
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onBlur={commitEdit}
+          onKeyDown={handleKeyDown}
+        />
+      ) : (
+        <span className="cursor-pointer truncate" onClick={() => startEdit('name')}>{item.name}</span>
+      )}
+
+      {/* Price */}
+      {editingField === 'price' ? (
+        <div className="relative">
+          <Input
+            autoFocus
+            className="h-7 text-sm pr-8"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onBlur={commitEdit}
+            onKeyDown={handleKeyDown}
+          />
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">R$</span>
+        </div>
+      ) : (
+        <span className="text-center cursor-pointer" onClick={() => startEdit('price')}>{item.price}</span>
+      )}
+
+      {/* Max QTY */}
+      {editingField === 'maxQty' ? (
+        <div>
+          <Input
+            autoFocus
+            className="h-7 text-sm"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onBlur={commitEdit}
+            onKeyDown={handleKeyDown}
+          />
+          <span className="text-[10px] text-muted-foreground">0=unlimited</span>
+        </div>
+      ) : (
+        <span className="text-center cursor-pointer" onClick={() => startEdit('maxQty')}>{item.maxQty}</span>
+      )}
+
+      {/* Actions - visible on hover */}
+      <div className={`flex items-center gap-1 justify-end transition-opacity ${hovered ? 'opacity-100' : 'opacity-0'}`}>
+        <button onClick={() => startEdit('name')} className="p-1 rounded hover:bg-secondary">
+          <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+        </button>
+        <button onClick={onDelete} className="p-1 rounded hover:bg-secondary">
+          <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const NewItemPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
