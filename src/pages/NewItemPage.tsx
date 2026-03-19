@@ -867,7 +867,7 @@ const NewItemPage = () => {
       <Dialog open={newModifierDialogOpen} onOpenChange={setNewModifierDialogOpen}>
         <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t("newItem.createSubItem")}</DialogTitle>
+            <DialogTitle>{newModifierEditIdx !== null ? t("newItem.editItem") : t("newItem.createSubItem")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-5 pt-2">
             {/* Name */}
