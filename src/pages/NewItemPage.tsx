@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AdminLayout from "@/components/AdminLayout";
-import { ArrowLeft, ImagePlus, Plus, X, GripVertical, Copy, Trash2, ChevronUp, ChevronDown, Link2, Save } from "lucide-react";
+import { ArrowLeft, ImagePlus, Plus, X, GripVertical, Copy, Trash2, ChevronUp, ChevronDown, Link2, Save, Pencil, Mail } from "lucide-react";
 import ImageUploadDialog from "@/components/ImageUploadDialog";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -18,6 +18,128 @@ import { useMenu } from "@/contexts/MenuContext";
 import { toast } from "@/hooks/use-toast";
 
 const allergens = ["Diary", "Eggs", "Fish", "Diary", "Eggs", "Fish", "Diary", "Eggs", "Fish", "Diary", "Eggs", "Fish"];
+
+interface SubItemRowProps {
+  item: { name: string; price: string; maxQty: string };
+  idx: number;
+  groupId: string;
+  totalItems: number;
+  onUpdate: (field: 'name' | 'price' | 'maxQty', value: string) => void;
+  onDelete: () => void;
+  onDragStart: () => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDragEnd: () => void;
+}
+
+const SubItemRow = ({ item, totalItems, onUpdate, onDelete, onDragStart, onDragOver, onDragEnd }: SubItemRowProps) => {
+  const [hovered, setHovered] = useState(false);
+  const [editingField, setEditingField] = useState<'name' | 'price' | 'maxQty' | null>(null);
+  const [editValue, setEditValue] = useState("");
+
+  const startEdit = (field: 'name' | 'price' | 'maxQty') => {
+    setEditingField(field);
+    if (field === 'price') {
+      setEditValue(item.price.replace('R$', ''));
+    } else if (field === 'maxQty') {
+      setEditValue(item.maxQty === 'unlimited' || item.maxQty === '-' ? '' : item.maxQty);
+    } else {
+      setEditValue(item.name);
+    }
+  };
+
+  const commitEdit = () => {
+    if (!editingField) return;
+    if (editingField === 'name' && editValue.trim()) {
+      onUpdate('name', editValue.trim());
+    } else if (editingField === 'price') {
+      onUpdate('price', editValue ? `R$${editValue}` : item.price);
+    } else if (editingField === 'maxQty') {
+      const val = editValue.trim();
+      onUpdate('maxQty', !val || val === '0' ? 'unlimited' : val);
+    }
+    setEditingField(null);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') commitEdit();
+    if (e.key === 'Escape') setEditingField(null);
+  };
+
+  return (
+    <div
+      className="grid grid-cols-[24px_24px_1fr_100px_100px_60px] gap-2 items-center px-4 py-2 border-t border-border text-sm"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      draggable
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDragEnd={onDragEnd}
+    >
+      <GripVertical className={`h-4 w-4 cursor-grab ${totalItems <= 1 ? 'text-muted-foreground/30' : 'text-muted-foreground'}`} />
+      <div className="h-6 w-6 rounded bg-muted flex items-center justify-center">
+        <Mail className="h-3 w-3 text-muted-foreground" />
+      </div>
+
+      {/* Name */}
+      {editingField === 'name' ? (
+        <Input
+          autoFocus
+          className="h-7 text-sm"
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onBlur={commitEdit}
+          onKeyDown={handleKeyDown}
+        />
+      ) : (
+        <span className="cursor-pointer truncate" onClick={() => startEdit('name')}>{item.name}</span>
+      )}
+
+      {/* Price */}
+      {editingField === 'price' ? (
+        <div className="relative">
+          <Input
+            autoFocus
+            className="h-7 text-sm pr-8"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onBlur={commitEdit}
+            onKeyDown={handleKeyDown}
+          />
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">R$</span>
+        </div>
+      ) : (
+        <span className="text-center cursor-pointer" onClick={() => startEdit('price')}>{item.price}</span>
+      )}
+
+      {/* Max QTY */}
+      {editingField === 'maxQty' ? (
+        <div>
+          <Input
+            autoFocus
+            className="h-7 text-sm"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onBlur={commitEdit}
+            onKeyDown={handleKeyDown}
+          />
+          <span className="text-[10px] text-muted-foreground">0=unlimited</span>
+        </div>
+      ) : (
+        <span className="text-center cursor-pointer" onClick={() => startEdit('maxQty')}>{item.maxQty}</span>
+      )}
+
+      {/* Actions - visible on hover */}
+      <div className={`flex items-center gap-1 justify-end transition-opacity ${hovered ? 'opacity-100' : 'opacity-0'}`}>
+        <button onClick={() => startEdit('name')} className="p-1 rounded hover:bg-secondary">
+          <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+        </button>
+        <button onClick={onDelete} className="p-1 rounded hover:bg-secondary">
+          <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
+        </button>
+      </div>
+    </div>
+  );
+};
 
 const NewItemPage = () => {
   const navigate = useNavigate();
@@ -45,6 +167,7 @@ const NewItemPage = () => {
   const [saleTimeType, setSaleTimeType] = useState("weekly");
   const [selectedAllergens, setSelectedAllergens] = useState<number[]>([]);
   const [deleteGroupId, setDeleteGroupId] = useState<string | null>(null);
+  const [dragItem, setDragItem] = useState<{ groupId: string; idx: number } | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -526,20 +649,54 @@ const NewItemPage = () => {
 
                     {/* Items table */}
                     <div className="rounded-lg bg-secondary/50 overflow-hidden">
-                      <div className="grid grid-cols-3 px-4 py-2 text-sm font-medium text-muted-foreground bg-secondary">
+                      <div className="grid grid-cols-[24px_24px_1fr_100px_100px_60px] gap-2 items-center px-4 py-2 text-sm font-medium text-muted-foreground bg-secondary">
+                        <span></span>
+                        <span></span>
                         <span>{t("newItem.itemNameCol")}</span>
                         <span className="text-center">{t("newItem.priceCol")}</span>
                         <span className="text-center">Max QTY</span>
+                        <span></span>
                       </div>
                       {group.items.length === 0 ? (
                         <div className="py-8 text-center text-sm text-muted-foreground">{t("newItem.pleaseLinkSubItems")}</div>
                       ) : (
                         group.items.map((item, idx) => (
-                          <div key={idx} className="grid grid-cols-3 px-4 py-2 border-t border-border text-sm">
-                            <span>{item.name}</span>
-                            <span className="text-center">{item.price}</span>
-                            <span className="text-center">{item.maxQty}</span>
-                          </div>
+                          <SubItemRow
+                            key={idx}
+                            item={item}
+                            idx={idx}
+                            groupId={group.id}
+                            totalItems={group.items.length}
+                            onUpdate={(field, value) => {
+                              setModifierGroups(prev => prev.map(g => {
+                                if (g.id !== group.id) return g;
+                                const newItems = [...g.items];
+                                newItems[idx] = { ...newItems[idx], [field]: value };
+                                return { ...g, items: newItems };
+                              }));
+                            }}
+                            onDelete={() => {
+                              setModifierGroups(prev => prev.map(g => {
+                                if (g.id !== group.id) return g;
+                                return { ...g, items: g.items.filter((_, i) => i !== idx) };
+                              }));
+                            }}
+                            onDragStart={() => setDragItem({ groupId: group.id, idx })}
+                            onDragOver={(e) => {
+                              e.preventDefault();
+                              if (dragItem && dragItem.groupId === group.id && dragItem.idx !== idx) {
+                                setModifierGroups(prev => prev.map(g => {
+                                  if (g.id !== group.id) return g;
+                                  const newItems = [...g.items];
+                                  const [moved] = newItems.splice(dragItem.idx, 1);
+                                  newItems.splice(idx, 0, moved);
+                                  setDragItem({ groupId: group.id, idx });
+                                  return { ...g, items: newItems };
+                                }));
+                              }
+                            }}
+                            onDragEnd={() => setDragItem(null)}
+                          />
                         ))
                       )}
                     </div>
