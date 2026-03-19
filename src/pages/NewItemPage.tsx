@@ -612,28 +612,6 @@ const NewItemPage = () => {
               {submitted && !deliveryPrice.trim() && <p className="mt-1 text-xs text-destructive">{t("newItem.deliveryPriceRequired")}</p>}
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-lg border border-border p-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <div><span className="text-sm font-semibold">{t("newItem.pickUpTitle")}</span><p className="text-xs text-muted-foreground">{t("newItem.priceLabel")}</p></div>
-                  <Switch checked={pickupEnabled} onCheckedChange={setPickupEnabled} />
-                </div>
-                <div className="relative">
-                  <Input placeholder={t("newItem.pleaseEnter")} disabled={!pickupEnabled} value={pickupPrice} onChange={(e) => setPickupPrice(e.target.value)} />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">R$</span>
-                </div>
-              </div>
-              <div className="rounded-lg border border-border p-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <div><span className="text-sm font-semibold">{t("newItem.didiTitle")}</span><p className="text-xs text-muted-foreground">{t("newItem.priceLabel")}</p></div>
-                  <Switch checked={didiEnabled} onCheckedChange={setDidiEnabled} />
-                </div>
-                <div className="relative">
-                  <Input placeholder={t("newItem.pleaseEnter")} disabled={!didiEnabled} />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">R$</span>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Stocking */}
