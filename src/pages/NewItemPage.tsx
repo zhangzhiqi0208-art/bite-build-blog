@@ -26,6 +26,7 @@ interface SubItemRowProps {
   totalItems: number;
   onUpdate: (field: 'name' | 'price' | 'maxQty', value: string) => void;
   onDelete: () => void;
+  onEdit: () => void;
   onDragStart: () => void;
   onDragOver: (e: React.DragEvent) => void;
   onDragEnd: () => void;
