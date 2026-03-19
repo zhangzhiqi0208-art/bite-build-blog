@@ -721,6 +721,7 @@ const NewItemPage = () => {
                                 return { ...g, items: newItems };
                               }));
                             }}
+                            onEdit={() => openEditModifierDialog(group.id, idx)}
                             onDelete={() => {
                               setModifierGroups(prev => prev.map(g => {
                                 if (g.id !== group.id) return g;
