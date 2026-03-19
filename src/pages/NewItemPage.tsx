@@ -450,7 +450,7 @@ const NewItemPage = () => {
                   </div>
                   <div className="flex items-center gap-1">
                     <button className="p-1.5 rounded hover:bg-secondary"><Copy className="h-4 w-4 text-muted-foreground hover:text-foreground" /></button>
-                    <button onClick={() => removeModifierGroup(group.id)} className="p-1.5 rounded hover:bg-secondary"><Trash2 className="h-4 w-4 text-muted-foreground hover:text-foreground" /></button>
+                    <button onClick={() => setDeleteGroupId(group.id)} className="p-1.5 rounded hover:bg-secondary"><Trash2 className="h-4 w-4 text-muted-foreground hover:text-foreground" /></button>
                     <div className="w-px h-5 bg-border mx-1" />
                     <button onClick={() => toggleModifierCollapse(group.id)} className="p-1.5 rounded hover:bg-secondary">
                       {group.collapsed ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronUp className="h-4 w-4 text-muted-foreground" />}
