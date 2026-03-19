@@ -45,6 +45,7 @@ const NewItemPage = () => {
   const [saleTimeType, setSaleTimeType] = useState("weekly");
   const [selectedAllergens, setSelectedAllergens] = useState<number[]>([]);
   const [deleteGroupId, setDeleteGroupId] = useState<string | null>(null);
+  const [dragItem, setDragItem] = useState<{ groupId: string; idx: number } | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
